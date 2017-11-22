@@ -8,7 +8,8 @@ clc
 
 %DEFINE PARAMETERS 
 inpN = 100;             % Number of input neurons to one output neuron
-inpConn = .1;           % 10% connection probability
+inpConn = .1;           % 10% connection probability for input to output
+exc_exc_Conn = .1;      % 10% connection probability for recurrent exc
 
 N = 1000;
 inhProb = .2;
@@ -17,6 +18,9 @@ k_inh = 1*(rand(N,1)<inhProb);
 k_exc = ~k_inh;
 inhInds = find(k_exc~=1);
 excInds = find(k_exc==1);
+
+numExc = length(excInds);
+numInh = length(inhInds);
 
 dt = 0.1;               % time step [ms] 
 t_end = 1000;           % total time of run [ms] 
@@ -54,6 +58,7 @@ I_e_vect = [I_e_vect  zeros(1, ...
 g_in = zeros(inpN,1);
 E_in = zeros(inpN,1);
 w_in = 0.07 * (rand(N,inpN) < inpConn);
+w_exc_exc = 0.05 * (rand(numExc,numExc) < exc_exc_Conn);
 
 % SYNAPTIC INPUT MODEL
 % I_syn = sum(w_in*g_in(t)*(E_in-v(t))
@@ -62,7 +67,8 @@ w_in = 0.07 * (rand(N,inpN) < inpConn);
 % Interspike interval: time between ith and i+1th spike (is). Corresp. FR
 % is 1/tisi.
 
-numSpk = zeros(N,1);      % hold number of spikes that have occurred for this neuron.
+numSpk = zeros(N,1);        % hold number of spikes that have occurred for this neuron.
+spkMat = zeros(N,length(t_vect));   % hold spikes per neuron over time to make a raster plot
 for t=1:T-1   %loop through values of t in steps of dt ms   
     if t*dt > 200 && t*dt < 700 % provide input current over ms = 200:700
         p = rand(inpN,1)<f_rate*dt;
@@ -95,6 +101,7 @@ for t=1:T-1   %loop through values of t in steps of dt ms
             V_vect(inds_spk,t+1) = V_reset;          % set voltage back to V_reset 
             V_plot_vect(inds_spk,t+1) = V_spike;     % set vector that will be plotted to show a spike here 
             numSpk(inds_spk) = numSpk(inds_spk) + 1;
+            spkMat(inds_spk,t) = 1;
     %else   
 %             % voltage didn't cross threshold so cell does not spike
 %             V_plot_vect(t+1) = V_vect(t+1); % plot the actual voltage 
@@ -111,3 +118,7 @@ plot(t_vect, V_plot_vect);
 title('Voltage vs. time'); 
 xlabel('Time in ms'); 
 ylabel('Voltage in mV'); 
+
+figure;
+grpID = 'Hidden Layer';
+plotRaster(spkMat,grpID,excInds,inhInds);
