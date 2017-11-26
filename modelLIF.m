@@ -7,12 +7,12 @@ clc
 
 
 %DEFINE PARAMETERS 
-inpN = 100;             % Number of input neurons to one output neuron
+inpN = 10;             % Number of input neurons to one output neuron
 inpConn = .2;           % connection probability for input to output
 exc_exc_Conn = .1;      % 10% connection probability for recurrent exc
 inh_exc_Conn = .2;      % 20% connection probability for inh to exc
 
-N = 50;
+N = 100;
 inhProb = .2;
 
 % Input distribution
@@ -32,18 +32,18 @@ excN = length(hidExcInds);
 inhN = length(hidInhInds);
 
 dt = 0.1;               % time step [ms] 
-t_end = 1000;           % total time of run [ms] 
-t_StimStart = 100;      % time to start injecting current [ms] 
-t_StimEnd = 400;        % time to end injecting current [ms] 
+t_end = 3000;           % total time of run [ms] 
+t_StimStart = 10;      % time to start injecting current [ms] 
+t_StimEnd = 900;        % time to end injecting current [ms] 
 E_L = -70;              % resting membrane potential [mV] 
 V_th = -55;             % spike threshold [mV] 
 V_reset = -75;          % value to reset voltage to after a spike [mV] 
 V_spike = 20;           % value to draw a spike to, when cell spikes [mV] 
 R_m = 10;               % membrane resistance [MOhm]. NOTE: If high, is more sensitive to injected current.
 tau = 10;               % membrane time constant [ms] 
-f_rate = 0.0002;         % ms^-1
+f_rate = 0.0037;         % ms^-1
 
-T = ceil(1000/dt);      % Number of time steps per ms.
+T = ceil(t_end/dt);      % Number of time steps per ms.
 
 %DEFINE INITIAL VALUES AND VECTORS TO HOLD RESULTS 
 t_vect = 0:dt:t_end;                        % will hold vector of times 
@@ -85,9 +85,61 @@ w_inh_exc = .0001 * (rand(inhN,excN) < inh_exc_Conn);
 numSpk = zeros(N,1);        % hold number of spikes that have occurred for this neuron.
 spkMat = zeros(N,length(t_vect));   % hold spikes per neuron over time to make a raster plot
 fired = 0;
-
-for t=1:T-1   %loop through values of t in steps of dt ms   
-    if t*dt > 200 && t*dt < 700 % provide input current over ms = 200:700
+t_past = 0;
+for t=1:T-1   %loop through values of t in steps of dt ms 
+%     % Add a new neuron every 4 steps.
+%     if t == t_past+200
+%         t_past = t;
+%         N = N+1;
+%         V_inf(N,:) = 0;
+%         V_vect(N,:) = E_L;
+%         V_plot_vect(N,:) = 0;
+%         g(N,:) = 0;
+%         I_app(N,:) = 0;
+%         fired(N) = 0;
+%         numSpk(N) = 0;
+%         
+%         inpConnRand = rand;
+%         if inpConnRand < inpConn
+%             w_in(N,:) = 0.07;
+%         else
+%             w_in(N,:) = 0;
+%         end
+%         
+%         inhOrExc = rand;
+%         if inhOrExc < 0.8
+%             excN = excN + 1;
+%             E(N) = 0;
+%             hidExcInds(end+1) = N;
+%             
+%             % This only needs to be done if a new exc neuron was added
+%             excConnRand = rand;
+%             if excConnRand < exc_exc_Conn
+%                 w_exc_exc(excN,excN) = 0.000000005;
+%             else
+%                 w_exc_exc(excN,excN) = 0;
+%             end     
+%             inhConnRand = rand;
+%             if inhConnRand < inh_exc_Conn
+%                 w_inh_exc(:,excN) = .0001;
+%             else
+%                 w_inh_exc(:,excN) = 0;
+%             end            
+%         else
+%             inhN = inhN + 1;
+%             E(N) = -85;
+%             hidInhInds(end+1) = N;
+%             
+%             % This only needs to be done if a new inh neuron was added
+%             inhConnRand = rand;
+%             if inhConnRand < inh_exc_Conn
+%                 w_inh_exc(inhN,:) = .0001;
+%             else
+%                 w_inh_exc(inhN,:) = 0;
+%             end            
+%         end
+%     end    
+    if (t*dt > 200 && t*dt < 700) || (t*dt >900 && t*dt < 1400) || (t*dt > 1600 && t*dt < 2100)  % provide input current over ms = 200:700
         temp_p = rand(inpN,1)<f_rate*dt;
         p(excInds,:) = temp_p(excInds);
         p(inhInds,:) = -1*(temp_p(inhInds));
@@ -95,8 +147,7 @@ for t=1:T-1   %loop through values of t in steps of dt ms
         p = 0;
     end
     
-    % update conductance of g_in
-    g_in = g_in + p;
+    % update conductance of g_in   
     I_app = w_in * (g_in .* E_in)-(w_in * g_in) .* V_vect(:,t);
     I_app = I_app - (w_in * g_in) .* V_vect(t);
     g_in = (1-dt/tau) * g_in;
@@ -121,8 +172,12 @@ for t=1:T-1   %loop through values of t in steps of dt ms
     
     fired = V_vect(:,t+1)>=V_th;
     inds_spk = find(V_vect(:,t+1) >= V_th);
-    inds_noSpk = find(V_vect(:,t+1) <= V_th);
-    
+    inds_noSpk = find(V_vect(:,t+1) < V_th);
+    g_in = g_in + p;
+%     if N > 50
+%         disp('updated neuron total');
+%         pause
+%     end     
 %     if any(V_vect(:,t+1)>V_th)
 %         disp('at least one cell spiked');
 %         pause
@@ -153,4 +208,4 @@ ylabel('Voltage in mV');
 
 figure;
 grpID = 'Hidden Layer';
-plotRaster(spkMat,grpID,excInds,inhInds);
+plotRaster(spkMat,grpID,hidExcInds,hidInhInds);
