@@ -41,7 +41,7 @@ V_reset = -75;          % value to reset voltage to after a spike [mV]
 V_spike = 20;           % value to draw a spike to, when cell spikes [mV] 
 R_m = 10;               % membrane resistance [MOhm]. NOTE: If high, is more sensitive to injected current.
 tau = 10;               % membrane time constant [ms] 
-f_rate = 0.0037;         % ms^-1
+f_rate = 0.003;         % ms^-1
 
 T = ceil(t_end/dt);      % Number of time steps per ms.
 
@@ -87,58 +87,38 @@ spkMat = zeros(N,length(t_vect));   % hold spikes per neuron over time to make a
 fired = 0;
 t_past = 0;
 for t=1:T-1   %loop through values of t in steps of dt ms 
-%     % Add a new neuron every 4 steps.
-%     if t == t_past+200
-%         t_past = t;
-%         N = N+1;
-%         V_inf(N,:) = 0;
-%         V_vect(N,:) = E_L;
-%         V_plot_vect(N,:) = 0;
-%         g(N,:) = 0;
-%         I_app(N,:) = 0;
-%         fired(N) = 0;
-%         numSpk(N) = 0;
-%         
-%         inpConnRand = rand;
-%         if inpConnRand < inpConn
-%             w_in(N,:) = 0.07;
-%         else
-%             w_in(N,:) = 0;
-%         end
-%         
-%         inhOrExc = rand;
-%         if inhOrExc < 0.8
-%             excN = excN + 1;
-%             E(N) = 0;
-%             hidExcInds(end+1) = N;
-%             
-%             % This only needs to be done if a new exc neuron was added
-%             excConnRand = rand;
-%             if excConnRand < exc_exc_Conn
-%                 w_exc_exc(excN,excN) = 0.000000005;
-%             else
-%                 w_exc_exc(excN,excN) = 0;
-%             end     
-%             inhConnRand = rand;
-%             if inhConnRand < inh_exc_Conn
-%                 w_inh_exc(:,excN) = .0001;
-%             else
-%                 w_inh_exc(:,excN) = 0;
-%             end            
-%         else
-%             inhN = inhN + 1;
-%             E(N) = -85;
-%             hidInhInds(end+1) = N;
-%             
-%             % This only needs to be done if a new inh neuron was added
-%             inhConnRand = rand;
-%             if inhConnRand < inh_exc_Conn
-%                 w_inh_exc(inhN,:) = .0001;
-%             else
-%                 w_inh_exc(inhN,:) = 0;
-%             end            
-%         end
-%     end    
+    % Add a new neuron every 4 steps.
+    if t == t_past+200
+        t_past = t;
+        N = N+1;
+        V_inf(N,:) = 0;
+        V_vect(N,:) = E_L;
+        V_plot_vect(N,:) = 0;
+        g(N,:) = 0;
+        I_app(N,:) = 0;
+        fired(N) = 0;
+        numSpk(N) = 0;
+
+        w_in(N,:) = 0.07 * (rand(1,inpN) < inpConn);
+        
+        inhOrExc = rand;
+        if inhOrExc < 0.8
+            excN = excN + 1;
+            E(N) = 0;
+            hidExcInds(end+1) = N;
+            
+            % This only needs to be done if a new exc neuron was added
+            w_exc_exc(excN,excN) = 0.000000005 * (rand(1,1) < exc_exc_Conn);
+            w_inh_exc(:,excN) = 0.0001 * (rand(inhN,1) < inh_exc_Conn);       
+        else
+            inhN = inhN + 1;
+            E(N) = -85;
+            hidInhInds(end+1) = N;
+            
+            % This only needs to be done if a new inh neuron was added
+            w_inh_exc(inhN,:) = .0001 * (rand(1,excN) < inh_exc_Conn);           
+        end
+    end    
     if (t*dt > 200 && t*dt < 700) || (t*dt >900 && t*dt < 1400) || (t*dt > 1600 && t*dt < 2100)  % provide input current over ms = 200:700
         temp_p = rand(inpN,1)<f_rate*dt;
         p(excInds,:) = temp_p(excInds);
