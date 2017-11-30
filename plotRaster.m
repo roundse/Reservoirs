@@ -13,6 +13,6 @@ title(['Raster Plot - ',grpID]);
 xlabel('Time t (ms)');
 ylabel('Neuron number');
 ylim([0 size(spikeMat, 1)+1]);
-xlim([0 c-1]);
+xlim([0 c]);
 
 end
