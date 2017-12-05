@@ -8,9 +8,9 @@ clc
 
 %DEFINE PARAMETERS 
 inpN = 10;             % Number of input neurons to one output neuron
-inpConn = .9;           % connection probability for input to output
-exc_exc_Conn = .9;      % 10% connection probability for recurrent exc
-inh_exc_Conn = .9;      % 20% connection probability for inh to exc
+inpConn = .1;           % connection probability for input to output
+exc_exc_Conn = .1;      % 10% connection probability for recurrent exc
+inh_exc_Conn = .1;      % 20% connection probability for inh to exc
 
 N(1) = 1;
 inhProb = .2;
@@ -41,7 +41,7 @@ V_reset = -75;          % value to reset voltage to after a spike [mV]
 V_spike = 20;           % value to draw a spike to, when cell spikes [mV] 
 R_m = 10;               % membrane resistance [MOhm]. NOTE: If high, is more sensitive to injected current.
 tau = 10;               % membrane time constant [ms] 
-f_rate = 0.003;         % ms^-1
+f_rate = 0.008;         % ms^-1
 
 T = ceil(t_end/dt);      % Number of time steps per ms.
 
@@ -71,9 +71,14 @@ g{1} = zeros(N,1);
 E{1} = zeros(N,1);
 E{1}(hidInhInds{1}) = -85;
 
-w_in = 0.07 * (rand(N,inpN) < inpConn);
-w_exc_exc{1} = 0.000000005 * (rand(excN,excN) < exc_exc_Conn);
-w_inh_exc{1} = .0001 * (rand(inhN,excN) < inh_exc_Conn);
+% WEIGHT VALUE PARAMS
+inpWght = 0.07;
+excWght = 0.05;
+inhWght = 0.01;
+
+w_in = inpWght * (rand(N,inpN) < inpConn);
+w_exc_exc{1} = excWght * (rand(excN,excN) < exc_exc_Conn);
+w_inh_exc{1} = inhWght * (rand(inhN,excN) < inh_exc_Conn);
 
 % SYNAPTIC INPUT MODEL
 % I_syn = sum(w_in*g_in(t)*(E_in-v(t))
@@ -85,8 +90,27 @@ w_inh_exc{1} = .0001 * (rand(inhN,excN) < inh_exc_Conn);
 numSpk = zeros(N,1);        % hold number of spikes that have occurred for this neuron.
 spkMat = zeros(N,length(t_vect));   % hold spikes per neuron over time to make a raster plot
 fired = 0;
+
+D_exc = sum(any(w_exc_exc{1}~=0));
+D_inh = sum(any(w_inh_exc{1}~=0));
+
+totalDExc = sum(D_exc);
+totalDInh = sum(D_inh);
+
 t_past = 0;
 for t=1:T-1   %loop through values of t in steps of dt ms 
+    % THREE STEPS:
+    % STEP 1: CONNECTION TYPE SELECTION (BETWEEN OR INTERNAL)
+    r = rand;
+    if r < 0.9
+        % connection type is internal
+    else
+        % connection type is between
+    end
+    % STEP 2: PICK A SUBMODULE WHERE CONNECTION OCCURS
+    
+    % STEP 3: MAKE A NEW VERTEX (ONLY IF INTERNAL CONNECTION IS MADE)
+    
     % Add a new neuron every 4 steps.
     if t == t_past+200
         t_past = t;
@@ -99,24 +123,31 @@ for t=1:T-1   %loop through values of t in steps of dt ms
         fired(N(1),:) = 0;
         numSpk(N(1)) = 0;
 
-        w_in(N(1),:) = 0.07 * (rand(1,inpN) < inpConn);
+        w_in(N(1),:) = inpWght * (rand(1,inpN) < inpConn);
         
         inhOrExc = rand;
         if inhOrExc < 0.8
             excN = excN + 1;
             E{1}(N,:) = 0;
             hidExcInds{1}(end+1) = N;
+            w_exc_exc{1}(excN,excN) = 0;
+            w_exc_exc{1}(:,excN) = excWght * (rand(excN,1) < exc_exc_Conn);
+            w_exc_exc{1}(excN,:) = excWght * (rand(1,excN) < exc_exc_Conn);     
             
-            % This only needs to be done if a new exc neuron was added
-            w_exc_exc{1}(excN,excN) = 0.000000005 * (rand(1,1) < exc_exc_Conn);
-            w_inh_exc{1}(:,excN) = 0.0001 * (rand(inhN,1) < inh_exc_Conn);       
+            if inhN ~= 0
+                w_inh_exc{1}(inhN,excN) = 0;
+                % This only needs to be done if a new exc neuron was added
+                w_inh_exc{1}(:,excN) = inhWght * (rand(inhN,1) < inh_exc_Conn); 
+            end
         else
             inhN = inhN + 1;
             E{1}(N,:) = -85;
             hidInhInds{1}(end+1) = N;
-            
-            % This only needs to be done if a new inh neuron was added
-            w_inh_exc{1}(inhN,:) = .0001 * (rand(1,excN) < inh_exc_Conn);           
+            if excN ~= 0
+                w_inh_exc{1}(inhN,excN) = 0;
+                % This only needs to be done if a new inh neuron was added
+                w_inh_exc{1}(inhN,:) = inhWght * (rand(1,excN) < inh_exc_Conn); 
+            end
         end
     end    
     if (t*dt > 200 && t*dt < 700) || (t*dt >900 && t*dt < 1400) || (t*dt > 1600 && t*dt < 2100)  % provide input current over ms = 200:700
@@ -179,7 +210,39 @@ for t=1:T-1   %loop through values of t in steps of dt ms
 %             V_plot_vect(t+1) = V_vect(t+1); % plot the actual voltage 
             V_plot_vect{1}(inds_noSpk,t+1) = V_vect{1}(inds_noSpk,t+1);
     %end  
-   
+
+    % Get random neuron numbers for exc_exc.
+    if excN >= 4
+        % Update degree counts.
+        temp = w_exc_exc{1};
+        temp(temp>0) = 1;
+        D_exc = sum(temp);
+        totalDExc = sum(D_exc);
+      
+        % Get probability
+        P_exc = cumsum(D_exc ./ totalDExc);
+        r1 = rand;
+        inx_exc1 = find([-1 P_exc] < r1, 1, 'last');
+        r2 = rand;
+        inx_exc2 = find([-1 P_exc] < r2, 1, 'last');
+        w_exc_exc{1}(inx_exc1,inx_exc2) = excWght;
+        
+        if inhN >= 4  
+            % Update degree count.
+            temp = w_inh_exc{1};
+            temp(temp>0) = 1;
+            D_inh = sum(temp);
+            totalDInh = sum(D_inh);  
+            % Get probability
+            P_inh = cumsum(D_inh ./ totalDInh);        
+            r3 = rand;
+            inx_inh = find([-1 P_inh] < r3, 1, 'last');
+            r4 = rand;
+            inx_exc3 = find([-1 P_exc] < r4, 1, 'last');
+            w_inh_exc{1}(inx_inh,inx_exc3) = inhWght;             
+        end
+    end
+
 end 
 
 avgFR = 1000*numSpk/(t_StimEnd-t_StimStart);     % gives us average FR in Hz.
