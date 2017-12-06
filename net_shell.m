@@ -14,7 +14,8 @@ n = 4;
 excConnProb = .5;
 
 % Create recurrent connecton matrix in each hierarchy and submodule.
-[w_exc_exc, excN] = createModule(M, Q, n, n, excWght, excConnProb);
+w_exc_exc{1} = [];
+w_exc_exc{1} = addModules(w_exc_exc{1},Q,M,n,n);
 
 r = rand;
 
@@ -24,15 +25,13 @@ else
     connType = 'external';
 end
 
-% for t = 1:T
-%     for m = M:-1:1
-%         if strcmp(connType,'internal')
-%             mod = randi([1,Q]);
-%             w_exc_exc{m}{mod} = addInternalConn(w_exc_exc{m}{mod},excWght);
-%             if m == 1
-%                 excN{m}{mod} = excN{m}{mod}+1;
-%                 w_exc_exc{m}{mod} = addNeuron(w_exc_exc{m}{mod},excN{m}{mod},excN{m}{mod});
-%             end
+for t = 1:T
+    for m = 1:M % This will be the depth we want to get to
+        if strcmp(connType,'internal')
+            if m == M
+                n = n+1;
+                w_exc_exc{1}= addNeuronRecursive(w_exc_exc{1},M,1,n,1,excWght);
+            end
 %         else
 %             mod1 = 0;
 %             mod2 = 0;
@@ -42,9 +41,9 @@ end
 %             end
 %             betweenModWeights = addBetweenMatrix(m,mod1,mod2,excN{m}{mod1},excN{m}{mod2});
 %             betweenModWeights{m}{mod1}{mod2} = addExternalConn(m,mod1,mod2,excN{m}{mod1},excN{m}{mod2},betweenWght);
-%         end
-%     end
-% end
+        end
+    end
+end
 % 
 % for m = M:-1:1
 %     for q = 1:Q
