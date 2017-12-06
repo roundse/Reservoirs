@@ -1,19 +1,16 @@
-function m = addModules(m,Q,depth)
-depth
-while depth > 1
-    if iscell(m)
+function m = addModules(m,Q,d,n1,n2)
+    d = d-1;
+    if (d >= 1)
+        temp{Q} = [];
+        m = temp;    
         for i = 1:length(m)
-            if iscell(m{i})
-                m{i} = addModules(m{i},Q,depth);
-%             else
-%                 temp{i}{Q} = [];
-%                 m{i} = temp;
-            end
+                disp('calling add module');
+                m{i} = addModules(m{i},Q,d,n1,n2);
         end
     else
-        error('Input matrix is not a cell.');
+        temp = zeros(n1,n2);
+        m = temp;
     end
-    depth = depth - 1
-end
+
 
 end
