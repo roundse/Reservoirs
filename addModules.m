@@ -4,13 +4,10 @@ function m = addModules(m,Q,d,n1,n2)
         temp{Q} = [];
         m = temp;    
         for i = 1:length(m)
-                disp('calling add module');
                 m{i} = addModules(m{i},Q,d,n1,n2);
         end
     else
         temp = zeros(n1,n2);
         m = temp;
     end
-
-
 end
