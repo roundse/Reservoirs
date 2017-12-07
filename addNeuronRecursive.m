@@ -1,16 +1,19 @@
-function m = addNeuronRecursive(m,Q,d,desired_d,v,w)
+function [m order] = addNeuronRecursive(m,Q,d,desired_d,v,w,order)
     d = d-1;
     
     % Check to see if we've reached the bottom of the tree.
-    % If not, keep going. Otherwise, add a neuron.
+    % If we haven't, keep going. Otherwise, add a neuron and make connect
+    % it to v pre-existing neurons.
     if (d >= desired_d)
-        mod = randi([1,Q])
-        m{mod} = addNeuronRecursive(m{mod},Q,d,desired_d,v,w);
+        mod = randi([1,Q]);
+        order(d) = mod;
+        [m{mod} order] = addNeuronRecursive(m{mod},Q,d,desired_d,v,w,order);
     else
-        [r c] = size(m);
-        m(r+1,:) = 0;
-        m(:,c+1) = 0;
-
+        l = length(m);
+        m(l+1,:) = 0;
+        m(:,l+1) = 0;
+        l = length(m);
+        
         % Connect the newly created neuron to v existing vertices.
         for i = 1:v
             connection = true;
@@ -25,15 +28,17 @@ function m = addNeuronRecursive(m,Q,d,desired_d,v,w)
             % Get probability
             P = cumsum(D ./ totalD);
 
-            while r+1 == inx || connection == true
+            while (l == inx || connection == true)
                 r1 = rand;
                 inx = find([-1 P] < r1, 1, 'last');
-                if m(r+1,inx) == 0
+                if m(l,inx) == 0
                     connection = false;
                 end
             end
 
-            m(r+1,inx) = w;
+            m(l,inx) = w;
         end
+        
+        %order = flip(order);
     end
 end
