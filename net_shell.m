@@ -5,45 +5,49 @@ clc
 % 90% chance of an internal connection.
 typeConnProb = 0.9;
 
-M = 5;
+M = 7;
 Q = 3;
 T = 30;
 excWght = 0.05;
 betweenWght = 0.25;
-n = 4;
+n = 5;
 excConnProb = .5;
 
 % Create recurrent connecton matrix in each hierarchy and submodule.
 w_exc_exc{1} = [];
-w_exc_exc{1} = addModules(w_exc_exc{1},Q,M,n,n);
+w_exc_exc{1} = addModules(w_exc_exc{1},Q,M,n,excWght);
+between_matrix{1} = [];
+between_matrix{1} = initBetweenWeights(between_matrix{1},Q^2,M,n);
+order = zeros(1,M-1);
 
-r = rand;
 
-if r < typeConnProb
-    connType = 'internal';
-else
-    connType = 'external';
-end
-
+desiredDepth = 1;
 for t = 1:T
-    for m = 1:M % This will be the depth we want to get to
-        if strcmp(connType,'internal')
-            if m == M
-                n = n+1;
-                w_exc_exc{1}= addNeuronRecursive(w_exc_exc{1},M,1,n,1,excWght);
-            end
-%         else
-%             mod1 = 0;
-%             mod2 = 0;
-%             while mod1 == mod2
-%                 mod1 = randi([1,Q]);
-%                 mod2 = randi([1,Q]);
-%             end
-%             betweenModWeights = addBetweenMatrix(m,mod1,mod2,excN{m}{mod1},excN{m}{mod2});
-%             betweenModWeights{m}{mod1}{mod2} = addExternalConn(m,mod1,mod2,excN{m}{mod1},excN{m}{mod2},betweenWght);
-        end
+    r = rand;
+
+    if r < typeConnProb
+        connType = 'internal';
+    else
+        connType = 'external';
+    end    
+    
+    if strcmp(connType,'internal')
+        disp('Adding a new internal connection.');
+        [w_exc_exc{1} order] = addNeuronRecursive(w_exc_exc{1},Q,M,1,excWght,order);
+        [w_exc_exc{1} s] = getModuleSize(w_exc_exc{1},order,M);
+        between_matrix{1} = updateBetweenWeightSize(between_matrix{1},Q,s,order,M);
+    else
+        disp('Adding a between-module connection.');
+        between_matrix{1} = addExternalConnRecursive(between_matrix{1},Q,M,betweenWght);
     end
 end
+
+
+disp('counting neurons');
+initial = 0;
+[w_exc_exc{1} count] = getTotalNeuronCount(w_exc_exc{1},M,initial);
+disp(['Total neurons: ',num2str(count)]);
+
 % 
 % for m = M:-1:1
 %     for q = 1:Q

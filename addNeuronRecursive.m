@@ -1,13 +1,13 @@
-function [m order] = addNeuronRecursive(m,Q,d,desired_d,v,w,order)
+function [m order] = addNeuronRecursive(m,Q,d,v,w,order)
     d = d-1;
     
     % Check to see if we've reached the bottom of the tree.
     % If we haven't, keep going. Otherwise, add a neuron and make connect
     % it to v pre-existing neurons.
-    if (d >= desired_d)
+    if (d >= 1)
         mod = randi([1,Q]);
         order(d) = mod;
-        [m{mod} order] = addNeuronRecursive(m{mod},Q,d,desired_d,v,w,order);
+        [m{mod} order] = addNeuronRecursive(m{mod},Q,d,v,w,order);
     else
         l = length(m);
         m(l+1,:) = 0;
@@ -37,6 +37,7 @@ function [m order] = addNeuronRecursive(m,Q,d,desired_d,v,w,order)
             end
 
             m(l,inx) = w;
+            m(inx,l) = w;
         end
         
         %order = flip(order);

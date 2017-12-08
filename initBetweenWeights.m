@@ -1,4 +1,4 @@
-function m = initBetweenWeights(m,Q,d,n,w)
+function m = initBetweenWeights(m,Q,d,n)
     d = d-1;
     Q = Q;
     % Check to see if at the bottom of the tree.
@@ -11,7 +11,7 @@ function m = initBetweenWeights(m,Q,d,n,w)
             temp{Q} = [];
             m = temp;    
             for i = 1:length(m)
-                    m{i} = initBetweenWeights(m{i},Q,d,n,w);
+                    m{i} = initBetweenWeights(m{i},Q,d,n);
             end
         % If we're at the bottom level, accommodate all sets of weight
         % matrices to fill.
