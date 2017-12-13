@@ -33,11 +33,18 @@ function m = addExternalConnRecursive(m,Q,d,w)
             P1 = cumsum(D1 ./ totalD);
             P2 = cumsum(D2 ./ totalD);
             
-            if (length(find(P1==1)) > 2 || length(find(P2==1)) < 2)
+            if (length(find(P1==1)) > 2 || length(find(P2==1)) > 2)
                 inx1 = randi([1, size(temp,1)]);
                 inx2 = randi([1, size(temp,2)]);
             else
+                prev_inx1 = 0;
+                prev_inx2 = 0;
+                inx1 = nan;
+                inx2 = nan;
                 while connection == true
+                    if prev_inx1 == inx1 && prev_inx2 == inx2
+                        disp('infinite loop');
+                    end
                     r1 = rand;
                     inx1 = find([-1 P1] < r1, 1);
                     r2 = rand;
@@ -45,6 +52,9 @@ function m = addExternalConnRecursive(m,Q,d,w)
                     
                     if m(inx1,inx2) == 0 
                         connection = false;
+                    else
+                        prev_inx1 = inx1;
+                        prev_inx2 = inx2;
                     end   
                 end
             end

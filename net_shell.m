@@ -48,13 +48,5 @@ initial = 0;
 [w_exc_exc{1} count] = getTotalNeuronCount(w_exc_exc{1},M,initial);
 disp(['Total neurons: ',num2str(count)]);
 
-% 
-% for m = M:-1:1
-%     for q = 1:Q
-%         figure;
-%         hist(w_exc_exc{m}{q})
-%         title(['Weight distribution - Module ',num2str(m),' - Submodule ',num2str(q)]);
-%     end
-% end
 
 
