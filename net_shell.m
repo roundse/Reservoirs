@@ -5,7 +5,7 @@ clc
 % 90% chance of an internal connection.
 typeConnProb = 0.9;
 
-M = 7;
+M = 3;
 Q = 3;
 T = 30;
 excWght = 0.05;
