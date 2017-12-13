@@ -32,8 +32,8 @@ function m = addExternalConnRecursive(m,Q,d,w)
             % Get probability
             P1 = cumsum(D1 ./ totalD);
             P2 = cumsum(D2 ./ totalD);
-
-            if ( (sum(P1 == 1) == length(P1)) && sum(P2 == 1) == length(P2))
+            
+            if (length(find(P1==1)) > 2 || length(find(P2==1)) < 2)
                 inx1 = randi([1, size(temp,1)]);
                 inx2 = randi([1, size(temp,2)]);
             else
@@ -42,10 +42,10 @@ function m = addExternalConnRecursive(m,Q,d,w)
                     inx1 = find([-1 P1] < r1, 1);
                     r2 = rand;
                     inx2 = find([-1 P2] < r2, 1);
-
-                    if m(inx1,inx2) == 0
+                    
+                    if m(inx1,inx2) == 0 
                         connection = false;
-                    end           
+                    end   
                 end
             end
         end

@@ -5,12 +5,12 @@ clc
 % 90% chance of an internal connection.
 typeConnProb = 0.9;
 
-M = 3;
+M = 2;
 Q = 3;
 T = 30;
 excWght = 0.05;
 betweenWght = 0.25;
-n = 5;
+n = 2;
 excConnProb = .5;
 
 % Create recurrent connecton matrix in each hierarchy and submodule.
