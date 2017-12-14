@@ -1,0 +1,46 @@
+clear
+close all
+clc
+
+M = 2;
+Q = 3;
+T = 30;
+typeConnProb = zeros(1,M);
+
+% 100pct chance of an internal connection at the very top.
+typeConnProb(M) = 1.0;
+for i = (M-1):-1:1
+    typeConnProb(i) = typeConnProb(i+1)-.1;
+end
+
+excWght = 0.05;
+betweenWght = 0.25;
+excConnProb = .5;
+n = 2;
+
+% Create recurrent connecton matrix in each hierarchy and submodule.
+between_matrix{1} = [];
+between_matrix{1} = initBetweenWeights(between_matrix{1},Q^2,M,n);
+between_matrix{1} = setInternalConnections(between_matrix{1},Q,M,excWght);
+
+order = 0;
+for t = 1:T
+    % type selection needs to be inside fxns
+    [between_matrix{1}, order, internal] = addConnRecursive(between_matrix{1},Q,M,excWght,betweenWght,1,typeConnProb,false,order);
+    if internal == true
+        %disp('New neuron added; update participating between-module weights.');
+        [between_matrix{1}, s] = getModuleSize(between_matrix{1},order,M);
+        between_matrix{1} = updateBetweenWeightSize(between_matrix{1},Q,s,order,M);
+    end
+end
+
+
+disp('counting neurons');
+initial = 0;
+[between_matrix{1}, nCount] = getNeuronCount(between_matrix{1},Q,M,initial);
+disp(['Total neurons: ',num2str(nCount)]);
+initial = 0;
+[between_matrix{1}, betweenDegree] = getTotalBetweenModConnCount(between_matrix{1},Q,M,initial);
+disp(['Total between-mod. edges: ',num2str(betweenDegree)]);
+
+

@@ -2,12 +2,11 @@ clear
 close all
 clc
 
-% 90% chance of an internal connection.
+M = 4;
+Q = 3;
+T = 1;
 typeConnProb = 0.9;
 
-M = 2;
-Q = 3;
-T = 30;
 excWght = 0.05;
 betweenWght = 0.25;
 n = 2;
@@ -23,6 +22,7 @@ order = zeros(1,M-1);
 
 desiredDepth = 1;
 for t = 1:T
+    % type selection needs to be inside fxns
     r = rand;
 
     if r < typeConnProb
@@ -30,7 +30,7 @@ for t = 1:T
     else
         connType = 'external';
     end    
-    
+
     if strcmp(connType,'internal')
         disp('Adding a new internal connection.');
         [w_exc_exc{1} order] = addNeuronRecursive(w_exc_exc{1},Q,M,1,excWght,order);
@@ -45,8 +45,10 @@ end
 
 disp('counting neurons');
 initial = 0;
-[w_exc_exc{1} count] = getTotalNeuronCount(w_exc_exc{1},M,initial);
-disp(['Total neurons: ',num2str(count)]);
-
+[w_exc_exc{1}, nCount] = getTotalNeuronCount(w_exc_exc{1},M,initial);
+disp(['Total neurons: ',num2str(nCount)]);
+initial = 0;
+[between_matrix{1}, betweenDegree] = getTotalBetweenModConnCount(between_matrix{1},M,initial);
+disp(['Total between-mod. edges: ',num2str(betweenDegree)]);
 
 

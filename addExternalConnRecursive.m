@@ -1,4 +1,4 @@
-function m = addExternalConnRecursive(m,Q,d,w)
+function m = addExternalConnRecursive(m,Q,d,w,probs)
     d = d-1;
     
     % Check to see if we've reached the bottom of the tree.

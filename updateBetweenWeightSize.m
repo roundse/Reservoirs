@@ -1,6 +1,13 @@
 function m = updateBetweenWeightSize(m,Q,s,order,d)
+    A = zeros(Q,Q);
     d = d-1;
-    mod = order(end);
+    [r c] = ind2sub(size(A),order(1));
+    if r == c
+        mod = r;
+    else
+        disp('wtf');
+    end
+    
     % Check to see if we've reached level 2 (level above the bottom).
     % If we haven't, keep going; otherwise, get the length of the matrix.
     if (d >= 2)        

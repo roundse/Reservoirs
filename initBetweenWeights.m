@@ -1,6 +1,5 @@
 function m = initBetweenWeights(m,Q,d,n)
     d = d-1;
-    Q = Q;
     % Check to see if at the bottom of the tree.
     % If we are not at the bottom, keep looking.
     % Otherwise, initialize weight matrices.
@@ -23,7 +22,7 @@ function m = initBetweenWeights(m,Q,d,n)
 %             end            
         end
     else
-        % fully connected initial subset.
+        % No connections between modules to begin with.
         temp = zeros(n,n);
         m = temp;
     end
