@@ -2,11 +2,12 @@ clear
 close all
 clc
 
-M = 2;
+M = 4;
 Q = 3;
-T = 30;
+T = 1;
 typeConnProb = zeros(1,M);
 
+disp('Setting connection probabilities for each level.');
 % 100pct chance of an internal connection at the very top.
 typeConnProb(M) = 1.0;
 for i = (M-1):-1:1
@@ -18,11 +19,13 @@ betweenWght = 0.25;
 excConnProb = .5;
 n = 2;
 
+disp('Initializing weights.');
 % Create recurrent connecton matrix in each hierarchy and submodule.
 between_matrix{1} = [];
-between_matrix{1} = initBetweenWeights(between_matrix{1},Q^2,M,n);
+between_matrix{1} = initWeights(between_matrix{1},Q^2,M,n);
 between_matrix{1} = setInternalConnections(between_matrix{1},Q,M,excWght);
 
+disp('Running network.');
 order = 0;
 for t = 1:T
     % type selection needs to be inside fxns

@@ -24,6 +24,15 @@ function [m, order, internal] = addConnRecursive(m,Q,d,in_w,exc_w,v,probs,intern
             end
             index = getBetweenModIndex(Q,mod2,mod1);
             order(d) = index;
+            
+            % Check to make sure a fully-connected matrix wasn't selected.
+            if ( d == 1 && all(all(m{index})) )
+                % If a fully connected matrix was chosen, start over.
+                disp(['No between-module connection added because', ...
+                'the matrix was fully connected.']);
+               	return;
+            end
+                
             [m{index}, order, internal] = addConnRecursive(m{index},Q,d,in_w,exc_w,v,probs,internal,order);
         end
     else
