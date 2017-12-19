@@ -3,10 +3,14 @@ function [m, order, internal] = addConnRecursive(m,Q,d,in_w,exc_w,v,probs,intern
     % Check to see if we've reached the bottom of the tree.
     % If not, keep going. Otherwise, add a neuron.
     if (d >= 1)
-        r = rand;
-        if r < probs(d)
+        if internal == true
             %disp('Adding a within-module connection.');
-            internal = true;
+            r = rand;
+            if r <= probs(d)
+                internal = true;
+            else
+                internal = false;
+            end
             mod = randi([1,Q]);
             index = getBetweenModIndex(Q,mod,mod);
             order(d) = index;
@@ -28,7 +32,7 @@ function [m, order, internal] = addConnRecursive(m,Q,d,in_w,exc_w,v,probs,intern
             % Check to make sure a fully-connected matrix wasn't selected.
             if ( d == 1 && all(all(m{index})) )
                 % If a fully connected matrix was chosen, start over.
-                disp(['No between-module connection added because', ...
+                disp(['No between-module connection added because ', ...
                 'the matrix was fully connected.']);
                	return;
             end

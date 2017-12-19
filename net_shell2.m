@@ -2,9 +2,9 @@ clear
 close all
 clc
 
-M = 4;
+M = 3;
 Q = 3;
-T = 1;
+T = 1000;
 typeConnProb = zeros(1,M);
 
 disp('Setting connection probabilities for each level.');
@@ -28,12 +28,18 @@ between_matrix{1} = setInternalConnections(between_matrix{1},Q,M,excWght);
 disp('Running network.');
 order = 0;
 for t = 1:T
+    r = rand;
+    if r <= typeConnProb(M-1)
+        internal = true;
+    else
+        internal = false;
+    end
     % type selection needs to be inside fxns
-    [between_matrix{1}, order, internal] = addConnRecursive(between_matrix{1},Q,M,excWght,betweenWght,1,typeConnProb,false,order);
+    [between_matrix{1}, order, internal] = addConnRecursive(between_matrix{1},Q,M,excWght,betweenWght,1,typeConnProb,internal,order);
     if internal == true
-        %disp('New neuron added; update participating between-module weights.');
+        disp('New neuron added; update participating between-module weights.');
         [between_matrix{1}, s] = getModuleSize(between_matrix{1},order,M);
-        between_matrix{1} = updateBetweenWeightSize(between_matrix{1},Q,s,order,M);
+        between_matrix{1} = updateBetweenWeightSize(between_matrix{1},Q,s,order,M,M);
     end
 end
 
