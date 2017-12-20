@@ -1,4 +1,4 @@
-function m = updateBetweenWeightSize(m,Q,s,order,orig_d,d)
+function m = updateBetweenWeightSize(m,Q,s,order,d)
     A = zeros(Q,Q);
     d = d-1;
     [r c] = ind2sub(size(A),order(1));
@@ -11,7 +11,7 @@ function m = updateBetweenWeightSize(m,Q,s,order,orig_d,d)
     % If we haven't, keep going; otherwise, get the length of the matrix.
     if (d >= 2)
         for i = 1:length(m)
-            m{i} = updateBetweenWeightSize(m{i},Q,s,order,orig_d,d);
+            m{i} = updateBetweenWeightSize(m{i},Q,s,order,d);
         end
     else
         % If at level 1, need to update the size of all matrices that

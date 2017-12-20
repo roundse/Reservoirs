@@ -4,7 +4,7 @@ clc
 
 M = 3;
 Q = 3;
-T = 1000;
+T = 30;
 typeConnProb = zeros(1,M);
 
 disp('Setting connection probabilities for each level.');
@@ -30,26 +30,28 @@ order = 0;
 for t = 1:T
     r = rand;
     if r <= typeConnProb(M-1)
-        internal = true;
+        orig_internal = true;
     else
-        internal = false;
+        orig_internal = false;
     end
     % type selection needs to be inside fxns
-    [between_matrix{1}, order, internal] = addConnRecursive(between_matrix{1},Q,M,excWght,betweenWght,1,typeConnProb,internal,order);
+    [between_matrix{1}, order, internal] = addConnRecursive(between_matrix{1},Q,M,M,excWght,betweenWght,1,typeConnProb,orig_internal,order);
     if internal == true
-        disp('New neuron added; update participating between-module weights.');
+        %disp('New neuron added; update participating between-module weights.');
         [between_matrix{1}, s] = getModuleSize(between_matrix{1},order,M);
-        between_matrix{1} = updateBetweenWeightSize(between_matrix{1},Q,s,order,M,M);
+        between_matrix{1} = updateBetweenWeightSize(between_matrix{1},Q,s,order,M);
     end
 end
-
+if  ( (any(any(between_matrix{1}{1}{1} == betweenWght))) || (any(any(between_matrix{1}{5}{5} == betweenWght))) || (any(any(between_matrix{1}{9}{9} == betweenWght))) )
+    disp('BAD! BAD!');
+end
 
 disp('counting neurons');
 initial = 0;
 [between_matrix{1}, nCount] = getNeuronCount(between_matrix{1},Q,M,initial);
 disp(['Total neurons: ',num2str(nCount)]);
 initial = 0;
-[between_matrix{1}, betweenDegree] = getTotalBetweenModConnCount(between_matrix{1},Q,M,initial);
+[between_matrix{1}, betweenDegree] = getTotalBetweenModConnCount(between_matrix{1},Q,M,M,initial);
 disp(['Total between-mod. edges: ',num2str(betweenDegree)]);
 
 
