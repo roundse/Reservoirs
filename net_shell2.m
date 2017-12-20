@@ -2,9 +2,9 @@ clear
 close all
 clc
 
-M = 4;
+M = 2;
 Q = 3;
-T = 30;
+T = 10;
 typeConnProb = zeros(1,M);
 
 disp('Setting connection probabilities for each level.');
@@ -39,10 +39,10 @@ for t = 1:T
     if internal == true
         %disp('New neuron added; update participating between-module weights.');
         [between_matrix{1}, s] = getModuleSize(between_matrix{1},order,M);
-        between_matrix{1} = updateBetweenWeightSize(between_matrix{1},Q,s,order,M);
+        between_matrix{1} = updateBetweenWeightSize(between_matrix{1},Q,s,order,M,M);
     end
 end
-if  ( (any(any(between_matrix{1}{1}{1}{1} == betweenWght))) || (any(any(between_matrix{1}{5}{5}{5} == betweenWght))) || (any(any(between_matrix{1}{9}{9}{9} == betweenWght))) )
+if  ( (any(any(between_matrix{1}{1} == betweenWght))) || (any(any(between_matrix{1}{5} == betweenWght))) || (any(any(between_matrix{1}{9} == betweenWght))) )
     disp('BAD! BAD!');
 end
 

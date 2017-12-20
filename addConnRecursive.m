@@ -27,7 +27,7 @@ function [m, order, internal] = addConnRecursive(m,Q,orig_d,d,in_w,exc_w,v,probs
             [m{index}, order, internal] = addConnRecursive(m{index},Q,orig_d,d-1,in_w,exc_w,v,probs,internal,order);
         else        
             internal = false;
-            disp('Adding a between-module connection.');
+            %disp('Adding a between-module connection.');
             mod1 = 0;
             mod2 = 0;
             if d == orig_d

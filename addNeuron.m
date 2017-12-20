@@ -12,6 +12,7 @@ function m = addNeuron(m,v,w)
 
         % Update degree counts.
         temp = m;
+
         temp(temp>0) = 1;
         D = sum(temp);
         totalD = sum(D);
@@ -22,12 +23,12 @@ function m = addNeuron(m,v,w)
         while (l == inx || connection == true)
             r1 = rand;
             inx = find([-1 P] < r1, 1, 'last');
-            if m(l,inx) == 0
+            if ( m(l,inx) == 0 && m(inx,l) == 0 )
                 connection = false;
             end
         end
 
         m(l,inx) = w;
-        m(inx,l) = w;
+        m(inx,l) = w; 
     end
 end
