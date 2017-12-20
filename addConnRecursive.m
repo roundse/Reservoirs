@@ -7,20 +7,32 @@ function [m, order, internal] = addConnRecursive(m,Q,orig_d,d,in_w,exc_w,v,probs
             r = rand;
             if r <= probs(d)
                 internal = true;
+                mod = randi([1,Q]);
+                index = getBetweenModIndex(Q,mod,mod);                
             else
                 internal = false;
+                mod1 = 0;
+                mod2 = 0;
+                % If an internal connection was chosen previously,
+                % restrict to submodules with different numbers, otherwise
+                % the connection will be internal again.      
+                while mod1 == mod2
+                    mod1 = randi([1,Q]);
+                    mod2 = randi([1,Q]); 
+                end
+                index = getBetweenModIndex(Q,mod2,mod1);              
             end
-            mod = randi([1,Q]);
-            index = getBetweenModIndex(Q,mod,mod);
+
             order(d-1) = index;
             [m{index}, order, internal] = addConnRecursive(m{index},Q,orig_d,d-1,in_w,exc_w,v,probs,internal,order);
         else        
-            %disp('Adding a between-module connection.');
-            % can't have the same submodules - that's an internal
-            % connection.
+            internal = false;
+            disp('Adding a between-module connection.');
             mod1 = 0;
             mod2 = 0;
             if d == orig_d
+                % can't have the same submodules - that's an internal
+                % connection.                
                 while mod1 == mod2
                     mod1 = randi([1,Q]);
                     mod2 = randi([1,Q]); 

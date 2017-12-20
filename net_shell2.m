@@ -2,7 +2,7 @@ clear
 close all
 clc
 
-M = 3;
+M = 4;
 Q = 3;
 T = 30;
 typeConnProb = zeros(1,M);
@@ -42,7 +42,7 @@ for t = 1:T
         between_matrix{1} = updateBetweenWeightSize(between_matrix{1},Q,s,order,M);
     end
 end
-if  ( (any(any(between_matrix{1}{1}{1} == betweenWght))) || (any(any(between_matrix{1}{5}{5} == betweenWght))) || (any(any(between_matrix{1}{9}{9} == betweenWght))) )
+if  ( (any(any(between_matrix{1}{1}{1}{1} == betweenWght))) || (any(any(between_matrix{1}{5}{5}{5} == betweenWght))) || (any(any(between_matrix{1}{9}{9}{9} == betweenWght))) )
     disp('BAD! BAD!');
 end
 
