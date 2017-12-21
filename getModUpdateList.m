@@ -1,4 +1,4 @@
-function [pre post] = getModUpdateList(mod,Q)
+function [pre post] = getModUpdateList(module,Q)
 
 % Return a list of the submodules that reference a separate module, and
 % tell whether they correspond to the pre or post.
@@ -9,9 +9,9 @@ post = zeros(1,Q^2);
 for i = 1:Q
     for j = 1:Q
         inx = inx + 1;
-        if i == mod
+        if i == module
             pre(inx) = 1;
-        elseif j == mod
+        elseif j == module
             post(inx) = 1;
         end
     end
