@@ -1,4 +1,4 @@
-function m = updateBetweenWeightSize(m,Q,s,order,orig_d,d)
+function [m,index] = updateBetweenWeightSize(m,Q,s,order,orig_d,d,index)
     d = d-1;
     
     A = zeros(Q,Q);
@@ -20,14 +20,14 @@ function m = updateBetweenWeightSize(m,Q,s,order,orig_d,d)
             for j = 1:Q
                 if ( (i == pre_m || j == post_m) && i~=j)
                     index = getBetweenModIndex(Q,j,i);
-                    m{index} = updateBetweenWeightSize(m{index},Q,s,order,orig_d,d);
+                    [m{index}, index] = updateBetweenWeightSize(m{index},Q,s,order,orig_d,d,index);
                 end
             end
         end
     else
         % If at level 1, need to update the size of all matrices that
         % relate to order(1).
-        [pre post] = getModUpdateList(module,Q);        
+        [pre post] = getModUpdateList(module,Q,order,index);        
         for i = 1:length(pre)
             if pre(i) == 1
                 m{i}(s,:) = 0;
