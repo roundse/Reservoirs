@@ -14,7 +14,7 @@ function m = updateInternalWeightSize(m,Q,s,order,d,index)
     else
         % If at level 1, need to update the size of all matrices that
         % relate to order(1).
-        [pre post] = getModUpdateList(mod,Q,order(1),index);        
+        [pre post] = getModUpdateList(mod,Q,order,index);        
         for i = 1:length(pre)
             if pre(i) == 1
                 m{i}(s,:) = 0;
