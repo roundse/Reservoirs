@@ -18,12 +18,17 @@ function [m,top_index,index] = updateBetweenWeightSize(m,Q,s,order,orig_d,d,top_
     if d > 1
         for i = 1:Q
             for j = 1:Q
-                if (i == pre_m || j == pre_m)
-                    if i == pre_m
-                        index = getBetweenModIndex(Q,j,i);
-                    else
-                        index = getBetweenModIndex(Q,i,j);
-                    end
+                % Need to distinguish between pre and postsynaptic at the
+                % beginning.
+                if (j == pre_m) % || j == pre_m)
+                    % With the if/else in place, presynaptic connections
+                    % don't get passed through.
+                    % But if it is there, then the connections get updated
+                    % even if the module is on the opposite side.
+                    % (Eg, 3->1 shouldn't get updated, but 3->3 should, and
+                    % instead both do.
+
+                    index = getBetweenModIndex(Q,j,i);
                     if d == (orig_d-1)
                         top_index = index;
                         if i ~= j
@@ -38,13 +43,17 @@ function [m,top_index,index] = updateBetweenWeightSize(m,Q,s,order,orig_d,d,top_
     else
         % If at level 1, need to update the size of all matrices that
         % relate to order(1).
-        [pre post] = getModUpdateList(module,Q,order,top_index,pre_m);     
+        [pre,post,presynaptic] = getModUpdateList(module,Q,order,top_index,pre_m);     
         
         for i = 1:length(pre)
-            if pre(i) == 1
-                m{i}(s,:) = 0;
-            elseif post(i) == 1
-                m{i}(:,s) = 0;
+            if presynaptic == true
+                if pre(i) == 1
+                    m{i}(s,:) = 0;
+                end
+            else
+                if post(i) == 1
+                    m{i}(:,s) = 0;
+                end
             end
         end   
     end

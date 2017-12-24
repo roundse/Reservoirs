@@ -1,4 +1,4 @@
-function [pre post] = getModUpdateList(module,Q,order,top,previous)
+function [pre,post,presynaptic] = getModUpdateList(module,Q,order,top,previous)
 
 % Return a list of the submodules that reference a separate module, and
 % tell whether they correspond to the pre or post.
@@ -16,10 +16,10 @@ A = zeros(Q,Q);
 
 if pre_top == pre_add
     presynaptic = true;
-   % disp('this connection is presynaptic');
+    disp('this connection is presynaptic');
 elseif post_top == pre_add
     presynaptic = false;
-   % disp('this connection is postsynaptic');
+    disp('this connection is postsynaptic');
 else
     disp('something is wrong');
 end
