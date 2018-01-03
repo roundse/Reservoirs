@@ -2,7 +2,7 @@ clear
 close all
 clc
 
-M = 4;
+M = 3;
 Q = 3;
 T = 1;
 typeConnProb = zeros(1,M);
@@ -39,8 +39,9 @@ for t = 1:T
     if internal == true
         %disp('New neuron added; update participating between-module weights.');
         [between_matrix{1}, s] = getModuleSize(between_matrix{1},order,M);
-        %between_matrix{1} = updateInternalWeightSize(between_matrix{1},Q,s,order,M,0);
-        between_matrix{1} = updateBetweenWeightSize(between_matrix{1},Q,s,order,M,M,0,0);
+        between_matrix{1} = updateInternalWeightSize(between_matrix{1},Q,s,order,M);
+        between_matrix{1} = updateBetweenPreSyn(between_matrix{1},Q,s,order,M,M,0,0);
+        between_matrix{1} = updateBetweenPostSyn(between_matrix{1},Q,s,order,M,M,0,0);
     end
 end
 % if  ( (any(any(between_matrix{1}{1} == betweenWght))) || (any(any(between_matrix{1}{5} == betweenWght))) || (any(any(between_matrix{1}{9} == betweenWght))) )

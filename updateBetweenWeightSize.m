@@ -16,11 +16,21 @@ function [m,top_index,index] = updateBetweenWeightSize(m,Q,s,order,orig_d,d,top_
     % Check to see if we've reached level 2 (level above the bottom).
     % If we haven't, keep going; otherwise, get the length of the matrix.
     if d > 1
-        for i = 1:Q
+        for p = 1:2
+            disp(['P = ',num2str(p)]);
+            %for i = 1:Q
             for j = 1:Q
+                if p == 1
+                    i = pre_m;
+                    index = getBetweenModIndex(Q,j,i);
+                end
+                if p == 2
+                    i = post_m;
+                    index = getBetweenModIndex(Q,i,j);
+                end
                 % Need to distinguish between pre and postsynaptic at the
                 % beginning.
-                if (j == pre_m) % || j == pre_m)
+                %if (i == pre_m) % || j == pre_m)
                     % With the if/else in place, presynaptic connections
                     % don't get passed through.
                     % But if it is there, then the connections get updated
@@ -28,7 +38,7 @@ function [m,top_index,index] = updateBetweenWeightSize(m,Q,s,order,orig_d,d,top_
                     % (Eg, 3->1 shouldn't get updated, but 3->3 should, and
                     % instead both do.
 
-                    index = getBetweenModIndex(Q,j,i);
+                    
                     if d == (orig_d-1)
                         top_index = index;
                         if i ~= j
@@ -37,13 +47,14 @@ function [m,top_index,index] = updateBetweenWeightSize(m,Q,s,order,orig_d,d,top_
                     else
                         [m{index}, top_index, index] = updateBetweenWeightSize(m{index},Q,s,order,orig_d,d,top_index,index);
                     end
-                end
+                %end
             end
         end
+       %end
     else
         % If at level 1, need to update the size of all matrices that
         % relate to order(1).
-        [pre,post,presynaptic] = getModUpdateList(module,Q,order,top_index,pre_m);     
+        [pre,post,presynaptic] = getModUpdateList(module,Q,order,top_index);     
         
         for i = 1:length(pre)
             if presynaptic == true
