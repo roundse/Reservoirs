@@ -61,6 +61,6 @@ function m = addExternalConnRecursive(m,Q,d,w,probs)
         end
         
         m(inx1,inx2) = w;
-        m(inx2,inx1) = w;
+%         m(inx2,inx1) = w;
     end
 end
