@@ -9,10 +9,12 @@ post = zeros(1,Q^2);
 for i = 1:Q
     for j = 1:Q
         inx = inx + 1;
-        if i == mod
-            pre(inx) = 1;
-        elseif j == mod
-            post(inx) = 1;
+        if i ~= j
+            if i == mod
+                pre(inx) = 1;
+            elseif j == mod
+                post(inx) = 1;
+            end
         end
     end
 end

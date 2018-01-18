@@ -2,7 +2,7 @@ clear
 close all
 clc
 
-M = 3;
+M = 2;
 Q = 3;
 T = 1;
 typeConnProb = zeros(1,M);
@@ -44,16 +44,19 @@ for t = 1:T
         between_matrix{1} = updateBetweenPostSyn(between_matrix{1},Q,s,order,M,M,0,0);
     end
 end
-% if  ( (any(any(between_matrix{1}{1} == betweenWght))) || (any(any(between_matrix{1}{5} == betweenWght))) || (any(any(between_matrix{1}{9} == betweenWght))) )
-%     disp('BAD! BAD!');
-% end
+
+path = [];
+subscripts = [];
+totalDegCount = [];
+totalDegCount = findBaseModules(between_matrix{1},between_matrix{1},Q,M,M,subscripts,path,totalDegCount);
+totalDegCount
 
 disp('counting neurons');
 initial = 0;
 [between_matrix{1}, nCount] = getNeuronCount(between_matrix{1},Q,M,initial);
 disp(['Total neurons: ',num2str(nCount)]);
-initial = 0;
-[between_matrix{1}, betweenDegree] = getTotalBetweenModConnCount(between_matrix{1},Q,M,M,initial);
-disp(['Total between-mod. edges: ',num2str(betweenDegree)]);
+% initial = 0;
+% [between_matrix{1}, betweenDegree] = getTotalBetweenModConnCount(between_matrix{1},Q,M,M,initial);
+% disp(['Total between-mod. edges: ',num2str(betweenDegree)]);
 
 
