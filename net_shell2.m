@@ -40,6 +40,7 @@ for t = 1:T
         %disp('New neuron added; update participating between-module weights.');
         [between_matrix{1}, s] = getModuleSize(between_matrix{1},order,M);
         between_matrix{1} = updateInternalWeightSize(between_matrix{1},Q,s,order,M);
+        path = [];
         between_matrix{1} = updateBetweenPreSyn(between_matrix{1},Q,s,order,M,M,0,0);
         between_matrix{1} = updateBetweenPostSyn(between_matrix{1},Q,s,order,M,M,0,0);
     end
@@ -47,9 +48,13 @@ end
 
 path = [];
 subscripts = [];
-totalDegCount = [];
-totalDegCount = findBaseModules(between_matrix{1},between_matrix{1},Q,M,M,subscripts,path,totalDegCount);
-totalDegCount
+totalDegPre = [];
+totalDegPost = [];
+[totalDegPre,totalDegPost] = findBaseModules(between_matrix{1},between_matrix{1},Q,M,M,subscripts,path,totalDegPre,totalDegPost);
+
+totalDegPre
+totalDegPost
+totalDegree = totalDegPre+totalDegPost;
 
 disp('counting neurons');
 initial = 0;
@@ -58,5 +63,16 @@ disp(['Total neurons: ',num2str(nCount)]);
 % initial = 0;
 % [between_matrix{1}, betweenDegree] = getTotalBetweenModConnCount(between_matrix{1},Q,M,M,initial);
 % disp(['Total between-mod. edges: ',num2str(betweenDegree)]);
+
+numN = 1:nCount;
+deg = sort(totalDegree,'descend');
+plot(deg,numN);
+title('Degree distribution');
+ylabel('Neuron #');
+xlabel('Degree');
+
+
+p = fit(sort(totalDegree,'descend')',numN','poly1');
+
 
 
