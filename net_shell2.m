@@ -52,8 +52,6 @@ totalDegPre = [];
 totalDegPost = [];
 [totalDegPre,totalDegPost] = findBaseModules(between_matrix{1},between_matrix{1},Q,M,M,subscripts,path,totalDegPre,totalDegPost);
 
-totalDegPre
-totalDegPost
 totalDegree = totalDegPre+totalDegPost;
 
 disp('counting neurons');

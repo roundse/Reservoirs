@@ -1,4 +1,4 @@
-function [m, c] = getNeuronTotDegreePre(m,module_list,nID,Q,d,c,order)
+function [m, c] = getNeuronTotDegreePre(m,module_list,nID,Q,d,c)
 d = d-1;
 
 % Module list tells the function where the neuron (nID) is located so that
@@ -8,8 +8,8 @@ if d >= 1
     
     for j = 1:Q
         index = getBetweenModIndex(Q,module_list(d),j);
-        order(d) = index;
-        [m{index}, c] = getNeuronTotDegreePre(m{index},module_list,nID,Q,d,c,order);
+%         order(d) = index;
+        [m{index}, c] = getNeuronTotDegreePre(m{index},module_list,nID,Q,d,c);
     end
 else
     

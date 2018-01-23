@@ -1,4 +1,4 @@
-function [totalDegreePre,totalDegreePost] = findBaseModules(orig_m,m,Q,orig_d,d,subOrder,order,totalDegreePre,totalDegreePost)
+function [totalDegreePre,totalDegreePost, order] = findBaseModules(orig_m,m,Q,orig_d,d,subOrder,order,totalDegreePre,totalDegreePost)
 
 d = d-1;
 
@@ -7,7 +7,7 @@ if d >= 1
         index = getBetweenModIndex(Q,h,h);
         subOrder(d) = h;
         order(d) = index;
-        [totalDegreePre,totalDegreePost] = findBaseModules(orig_m,m{index},Q,orig_d,d,subOrder,order,totalDegreePre,totalDegreePost);
+        [totalDegreePre,totalDegreePost, order] = findBaseModules(orig_m,m{index},Q,orig_d,d,subOrder,order,totalDegreePre,totalDegreePost);
     end
 else
     s = length(m);
@@ -27,11 +27,14 @@ else
     
     path = [];
     for n = 1:s
-        [orig_m, temp_c_pre] = getNeuronTotDegreePre(orig_m,subOrder,n,Q,orig_d,c_pre(n),path);
+        [orig_m, temp_c_pre] = getNeuronTotDegreePre(orig_m,subOrder,n,Q,orig_d,c_pre(n));
         c_pre(n) = c_pre(n) + temp_c_pre;
         
         [orig_m, temp_c_post] = getNeuronTotDegreePost(orig_m,subOrder,n,Q,orig_d,c_post(n));
-        c_post(n) = c_post(n) + temp_c_post;        
+        c_post(n) = c_post(n) + temp_c_post;       
+        
+        [orig_m, new_path] = getPathConnected(orig_m,subOrder,n,Q,orig_d,path);
+        new_path
     end
 
     totalDegreePre = horzcat(totalDegreePre,c_pre);
