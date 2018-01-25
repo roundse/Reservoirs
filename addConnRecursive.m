@@ -4,27 +4,34 @@ function [m, order, internal] = addConnRecursive(m,Q,orig_d,d,in_w,exc_w,v,probs
     if (d > 1)
         if internal == true
             %disp('Adding a within-module connection.');
-            r = rand;
-            if r <= probs(d)
-                internal = true;
+%             r = rand;
+%             if r < probs(d-1)
+%                 internal = true;
                 mod = randi([1,Q]);
                 index = getBetweenModIndex(Q,mod,mod);                
-            else
-                internal = false;
-                mod1 = 0;
-                mod2 = 0;
-                % If an internal connection was chosen previously,
-                % restrict to submodules with different numbers, otherwise
-                % the connection will be internal again.      
-                while mod1 == mod2
-                    mod1 = randi([1,Q]);
-                    mod2 = randi([1,Q]); 
-                end
-                index = getBetweenModIndex(Q,mod2,mod1);              
-            end
+%             else
+%                 internal = false;
+%                 mod1 = 0;
+%                 mod2 = 0;
+%                 % If an internal connection was chosen previously,
+%                 % restrict to submodules with different numbers, otherwise
+%                 % the connection will be internal again.      
+%                 while mod1 == mod2
+%                     mod1 = randi([1,Q]);
+%                     mod2 = randi([1,Q]); 
+%                 end
+%                 index = getBetweenModIndex(Q,mod2,mod1);              
+%             end
 
             order(d-1) = index;
-            [m{index}, order, internal] = addConnRecursive(m{index},Q,orig_d,d-1,in_w,exc_w,v,probs,internal,order);
+            
+            r = rand;
+            if r < probs(d-1)
+                internal = true; 
+            else
+                internal = false;
+            end
+            [m{index}, order, internal] = addConnRecursive(m{index},Q,orig_d,d-1,in_w,exc_w,v,probs,internal,order);            
         else        
             internal = false;
             %disp('Adding a between-module connection.');

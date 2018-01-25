@@ -24,7 +24,7 @@ else
     %disp(['the size of this submodule is ',num2str(size(temp))]);
     
     c = c + sum(temp(nID,:));
-
+    
 end
 
 

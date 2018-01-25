@@ -11,11 +11,15 @@ if d >= 1
     
     for j = 1:Q
         index = getBetweenModIndex(Q,module_list(d),j);
-        order(d+1) = index;
+        if ~isempty(order)
+            order(end+1,d+2) = index;
+        else
+            order(1,d+1) = index;
+        end
         [m{index}, order] = getPathConnected(m{index},module_list,nID,Q,d,order);
     end
 else
-    
+    size(order)
 %     disp('this submodule is on path: ');
 %     for i = length(order):-1:1
 %         disp(num2str(order(i))');
@@ -29,25 +33,24 @@ else
     
     if ~isempty(connected)
         for i = 1:length(connected)
-            temp_order(i,:) = order;
+            temp_order(i,:) = order(end,:);
             temp_order(i,d+1) = connected(i);
         end
     else
         temp_order = [];
     end
-%     order
-%     
-%     order = temp_order;    
 
-    disp('this submodule is on path: ');
-    for i = 1:size(temp_order,1)
-        %for j = size(temp_order,2):-1:1
-            disp(num2str(temp_order(i,:)));
-        %end
+    if ~isempty(temp_order)
+        order = vertcat(order,temp_order);
     end
 
-    
-    
+%     disp('this submodule is on path: ');
+%     for i = 1:size(temp_order,1)
+%         %for j = size(temp_order,2):-1:1
+%             disp(num2str(temp_order(i,:)));
+%         %end
+%     end
+
 end
 
 end

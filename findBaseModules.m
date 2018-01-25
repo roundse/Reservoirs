@@ -26,6 +26,7 @@ else
     % run through pre and post
     
     path = [];
+    p = [];
     for n = 1:s
         [orig_m, temp_c_pre] = getNeuronTotDegreePre(orig_m,subOrder,n,Q,orig_d,c_pre(n));
         c_pre(n) = c_pre(n) + temp_c_pre;
@@ -33,8 +34,7 @@ else
         [orig_m, temp_c_post] = getNeuronTotDegreePost(orig_m,subOrder,n,Q,orig_d,c_post(n));
         c_post(n) = c_post(n) + temp_c_post;       
         
-        [orig_m, new_path] = getPathConnected(orig_m,subOrder,n,Q,orig_d,path);
-        new_path
+%         [orig_m, new_path] = getPathConnected(orig_m,subOrder,n,Q,orig_d,path);
     end
 
     totalDegreePre = horzcat(totalDegreePre,c_pre);

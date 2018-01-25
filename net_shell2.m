@@ -2,9 +2,9 @@ clear
 close all
 clc
 
-M = 2;
+M = 4;
 Q = 3;
-T = 1;
+T = 7000;
 typeConnProb = zeros(1,M);
 
 disp('Setting connection probabilities for each level.');
@@ -29,7 +29,7 @@ disp('Running network.');
 order = 0;
 for t = 1:T
     r = rand;
-    if r <= typeConnProb(M-1)
+    if r < typeConnProb(M)
         orig_internal = true;
     else
         orig_internal = false;
@@ -62,12 +62,23 @@ disp(['Total neurons: ',num2str(nCount)]);
 % [between_matrix{1}, betweenDegree] = getTotalBetweenModConnCount(between_matrix{1},Q,M,M,initial);
 % disp(['Total between-mod. edges: ',num2str(betweenDegree)]);
 
+% figure;
 numN = 1:nCount;
 deg = sort(totalDegree,'descend');
-plot(deg,numN);
+% plot(deg,numN);
+% title('Degree distribution');
+% ylabel('Neuron #');
+% xlabel('Degree');
+
+figure;
+hist(totalDegree);
+xlim([0 max(totalDegree)]);
 title('Degree distribution');
 ylabel('Neuron #');
 xlabel('Degree');
+
+figure;
+loglog(numN,deg,'o');
 
 
 p = fit(sort(totalDegree,'descend')',numN','poly1');
