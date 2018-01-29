@@ -78,10 +78,12 @@ ylabel('Neuron #');
 xlabel('Degree');
 
 figure;
-loglog(numN,deg,'o');
-
-
-p = fit(sort(totalDegree,'descend')',numN','poly1');
-
-
+pd = 0;
+for i = 1:max(totalDegree)
+    pd = pd + 1;
+    v = find(totalDegree >= i);
+    sz = length(v);
+    perx(pd) = (sz/length(totalDegree));
+end
+loglog(perx,'o');
 
