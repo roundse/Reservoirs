@@ -22,21 +22,29 @@ else
     % initialize vector with size of module
     c_pre = zeros(1,s);
     c_post = zeros(1,s);
-   
+    totalConnNeighbors = [];
     % run through pre and post
     
     path = [];
-    p = [];
     for n = 1:s
         new_path = [];
-        [orig_m, temp_c_pre] = getNeuronTotDegreePre(orig_m,subOrder,n,Q,orig_d,c_pre(n));
+        [orig_m, temp_c_pre] = getNeuronTotDegreePre(orig_m,subOrder,n,Q,orig_d,c_pre(n),path);
         c_pre(n) = c_pre(n) + temp_c_pre;
         
-        [orig_m, temp_c_post] = getNeuronTotDegreePost(orig_m,subOrder,n,Q,orig_d,c_post(n));
+        [orig_m, temp_c_post] = getNeuronTotDegreePost(orig_m,subOrder,n,Q,orig_d,c_post(n),path);
         c_post(n) = c_post(n) + temp_c_post;       
         
         [orig_m, p, new_path] = getPathConnected(orig_m,subOrder,n,Q,orig_d,path,new_path);
-        new_path
+        
+       for i = 1:(size(new_path,1)-1)
+            p1 = new_path(i,:);
+            p2 = new_path(i+1,:);
+            [orig_m, c(i)] = countNeighborConns(orig_m,Q,orig_d,p1,p2,0);
+       end
+       numNeighbors = length(c);
+       connectedNeighbors = sum(c);
+       
+       clusterCoeff(n) = (2*connectedNeighbors)/(numNeighbors*(numNeighbors-1))
     end
 
     totalDegreePre = horzcat(totalDegreePre,c_pre);

@@ -85,9 +85,28 @@ function [m, order, internal] = addConnRecursive(m,Q,orig_d,d,in_w,exc_w,v,probs
             [m{index}, order, internal] = addConnRecursive(m{index},Q,orig_d,d-1,in_w,exc_w,v,probs,internal,order);
         end
     else
+
         if internal == true
             m = addNeuron(m,v,in_w);
-        else        
+        else 
+            checkIfInternal = zeros(1,length(order));
+                for l = 1:length(order)
+                    [pre(l),post(l)] = ind2sub(size(zeros(Q,Q)),order(l));
+                    if pre(l) == post(l)
+                        checkIfInternal(l) = 1;
+                    end
+                end
+                
+                if sum(checkIfInternal) == length(order)
+                    disp('SOMEHOW STILL ADDED AN INTERNAL CONN');
+%                     return;
+%                     while mod1 == mod2
+%                         mod1 = randi([1,Q]);
+%                         mod2 = randi([1,Q]); 
+%                     end
+%                     index = getBetweenModIndex(Q,mod2,mod1);
+%                     order(d-1) = index;
+                end            
             m = addExternalConn(m,exc_w);
         end        
     end

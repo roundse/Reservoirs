@@ -2,22 +2,22 @@ clear
 close all
 clc
 
-M = 5;
+M = 4;
 Q = 3;
-T = 1;
+T = 7000;
 typeConnProb = zeros(1,M);
 
 disp('Setting connection probabilities for each level.');
 % % % ***** 100pct chance of an internal connection at the very top.
-% typeConnProb(M) = 1.0;
-% for i = (M-1):-1:1
-%     typeConnProb(i) = typeConnProb(i+1)-.1;
-% end
+typeConnProb(M) = 1.0;
+for i = (M-1):-1:1
+    typeConnProb(i) = typeConnProb(i+1)-.1;
+end
 
-typeConnProb(1) = 0.7;
-typeConnProb(2) = 0.9;
-typeConnProb(3) = 0.95;
-typeConnProb(4) = 0.995;
+% typeConnProb(1) = 0.7;
+% typeConnProb(2) = 0.9;
+% typeConnProb(3) = 0.95;
+% typeConnProb(4) = 0.995;
 
 excWght = 0.05;
 betweenWght = 0.25;

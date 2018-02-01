@@ -11,7 +11,7 @@ if d >= 1
     
     for j = 1:Q
         index = getBetweenModIndex(Q,module_list(d),j);
-        order(d+1) = index;
+        order(d+1) = j;
 
         [m{index}, order, complete_order] = getPathConnected(m{index},module_list,nID,Q,d,order,complete_order);
     end
