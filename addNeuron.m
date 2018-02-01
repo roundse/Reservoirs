@@ -20,14 +20,24 @@ function m = addNeuron(m,v,w)
         % Get probability
         P = cumsum(D ./ totalD);
 
-        while (l == inx || connection == true)
+%         % This doesn't allow self-connections.
+%         while (l == inx || connection == true)
+%             r1 = rand;
+%             inx = find([-1 P] < r1, 1, 'last');
+%             if ( m(l,inx) == 0 && m(inx,l) == 0 )
+%                 connection = false;
+%             end
+%         end
+
+        % This DOES allow self-connections.
+        while (connection == true)
             r1 = rand;
             inx = find([-1 P] < r1, 1, 'last');
             if ( m(l,inx) == 0 && m(inx,l) == 0 )
                 connection = false;
             end
         end
-
+        
         m(l,inx) = w;
         m(inx,l) = w; 
     end

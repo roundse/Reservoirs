@@ -10,7 +10,7 @@ function m = initWeights(m,Q,d,n)
             temp{Q} = [];
             m = temp;    
             for i = 1:length(m)
-                    m{i} = initBetweenWeights(m{i},Q,d,n);
+                    m{i} = initWeights(m{i},Q,d,n);
             end           
         end
     else
