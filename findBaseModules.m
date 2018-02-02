@@ -55,13 +55,7 @@ else
                 end
            end
                     
-           connectedNeighbors(n) = sum(sum(c));
-           if connectedNeighbors(n) > numNeighbors(n)
-               disp('something is wrong');
-               connectedNeighbors(n)
-               numNeighbors(n)
-               
-           end           
+           connectedNeighbors(n) = sum(sum(c));          
            clusterCoeff(n) = (connectedNeighbors(n))/(numNeighbors(n)*(numNeighbors(n)-1));
        else
            clusterCoeff(n) = 0; 
