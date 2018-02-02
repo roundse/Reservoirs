@@ -3,8 +3,8 @@ close all
 clc
 
 M = 4;
-Q = 3;
-T = 3200;
+Q = 5;
+T = 1600;
 typeConnProb = zeros(1,M);
 
 disp('Setting connection probabilities for each level.');
