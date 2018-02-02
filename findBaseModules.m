@@ -44,22 +44,24 @@ else
        numNeighbors(n) = size(new_path,1);
         
        if numNeighbors(n) >= 2
-           temp_c = zeros(size(new_path,1)-1,2);
-           for i = 1:(size(new_path,1)-1)
+           c = zeros(numNeighbors(n),numNeighbors(n));
+           for i = 1:numNeighbors(n)
                 p1 = new_path(i,:);
-                p2 = new_path(i+1,:);
-                for j = 1:2
-                    [orig_m, temp_c(i,j)] = countNeighborConns(orig_m,Q,orig_d,p1,p2,0,[],j)
-                    
+                for j = 1:numNeighbors(n)
+                    if i ~= j
+                        p2 = new_path(j,:);
+                        [orig_m, c(i,j)] = countNeighborConns(orig_m,Q,orig_d,p1,p2,0,[],j);
+                    end
                 end
-                c = sum(temp_c,2);
            end
-           connectedNeighbors(n) = sum(c);
-%            if connectedNeighbors(n) > numNeighbors(n)
-%                disp('something is wrong');
-%                connectedNeighbors(n)
-%                numNeighbors(n)
-%            end           
+                    
+           connectedNeighbors(n) = sum(sum(c));
+           if connectedNeighbors(n) > numNeighbors(n)
+               disp('something is wrong');
+               connectedNeighbors(n)
+               numNeighbors(n)
+               
+           end           
            clusterCoeff(n) = (connectedNeighbors(n))/(numNeighbors(n)*(numNeighbors(n)-1));
        else
            clusterCoeff(n) = 0; 

@@ -3,28 +3,15 @@ function [m,c,order,i] = countNeighborConns(m,Q,d,p1,p2,c,order,i)
     
     % Check for both pre and post connections.
     if d >= 1
-        if i == 1
-            index = getBetweenModIndex(Q,p1(d+1),p2(d+1));
-        else
-            index = getBetweenModIndex(Q,p2(d+1),p1(d+1));
-        end
+        index = getBetweenModIndex(Q,p1(d+1),p2(d+1));
         order(d) = index; 
         [m{index},c,order,i] = countNeighborConns(m{index},Q,d,p1,p2,c,order,i);
     else
         % If a connection exists between these indeces on this path,
         % consider these neighbor neurons connected.
-%         p1
-%         p2
-%         order
-%         i
-        if i == 1
-            if m(p1(d+1),p2(d+1)) > 0
-                c = c+1;
-            end
-        else
-            if m(p2(d+1),p1(d+1)) > 0
-                c = c+1;
-            end
+
+        if m(p1(d+1),p2(d+1)) > 0
+            c = 1;
         end
     end
 end
