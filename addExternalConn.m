@@ -70,5 +70,4 @@ function m = addExternalConn(m,w)
     end
 
     m(inx1,inx2) = w;
-%     m(inx2,inx1) = w;
 end

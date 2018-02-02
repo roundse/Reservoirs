@@ -1,4 +1,4 @@
-function [m, order, internal] = addConnRecursive(m,Q,orig_d,d,in_w,exc_w,v,probs,internal,order)
+function [m, order, internal] = addConnRecursive(m,Q,d,in_w,exc_w,v,probs,internal,order)
     % Check to see if we've reached the bottom of the tree.
     % If not, keep going. Otherwise, add a neuron.
     if d > 1
@@ -34,7 +34,7 @@ function [m, order, internal] = addConnRecursive(m,Q,orig_d,d,in_w,exc_w,v,probs
             order(d-1) = index;
             
 
-            [m{index}, order, internal] = addConnRecursive(m{index},Q,orig_d,d-1,in_w,exc_w,v,probs,internal,order);            
+            [m{index}, order, internal] = addConnRecursive(m{index},Q,d-1,in_w,exc_w,v,probs,internal,order);            
         else        
             internal = false;
             %disp('Adding a between-module connection.');
@@ -82,7 +82,7 @@ function [m, order, internal] = addConnRecursive(m,Q,orig_d,d,in_w,exc_w,v,probs
                     return;
                 end                
             end
-            [m{index}, order, internal] = addConnRecursive(m{index},Q,orig_d,d-1,in_w,exc_w,v,probs,internal,order);
+            [m{index}, order, internal] = addConnRecursive(m{index},Q,d-1,in_w,exc_w,v,probs,internal,order);
         end
     else
 

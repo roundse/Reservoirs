@@ -15,9 +15,9 @@ function [m,top_index,index] = updateBetweenPostSyn(m,Q,s,order,orig_d,d,top_ind
             path(d) = index;
             if d == (orig_d-1)
                 top_index = index;
-                if k ~= post_m
+                %if k ~= post_m
                     [m{index}, top_index, index] = updateBetweenPostSyn(m{index},Q,s,order,orig_d,d,top_index,index,path);
-                end
+                %end
             elseif d == 1
                 checkIfInternal = zeros(1,length(path));
                 for l = 1:length(path)

@@ -2,22 +2,22 @@ clear
 close all
 clc
 
-M = 4;
+M = 5;
 Q = 3;
-T = 7000;
+T = 6000;
 typeConnProb = zeros(1,M);
 
 disp('Setting connection probabilities for each level.');
 % % % ***** 100pct chance of an internal connection at the very top.
-typeConnProb(M) = 1.0;
-for i = (M-1):-1:1
-    typeConnProb(i) = typeConnProb(i+1)-.1;
-end
+% typeConnProb(M) = 1.0;
+% for i = (M-1):-1:1
+%     typeConnProb(i) = typeConnProb(i+1)-.1;
+% end
 
-% typeConnProb(1) = 0.7;
-% typeConnProb(2) = 0.9;
-% typeConnProb(3) = 0.95;
-% typeConnProb(4) = 0.995;
+typeConnProb(1) = 0.7;
+typeConnProb(2) = 0.9;
+typeConnProb(3) = 0.95;
+typeConnProb(4) = 0.995;
 
 excWght = 0.05;
 betweenWght = 0.25;
@@ -34,7 +34,7 @@ disp('Running network.');
 order = 0;
 for t = 1:T
     % type selection needs to be inside fxns
-    [between_matrix{1}, order, internal] = addConnRecursive(between_matrix{1},Q,M,M,excWght,betweenWght,1,typeConnProb,[],order);
+    [between_matrix{1}, order, internal] = addConnRecursive(between_matrix{1},Q,M,excWght,betweenWght,n,typeConnProb,[],order);
     if internal == true
         %disp('New neuron added; update participating between-module weights.');
         [between_matrix{1}, s] = getModuleSize(between_matrix{1},order,M);
@@ -48,7 +48,10 @@ path = [];
 subscripts = [];
 totalDegPre = [];
 totalDegPost = [];
-[totalDegPre,totalDegPost] = findBaseModules(between_matrix{1},between_matrix{1},Q,M,M,subscripts,path,totalDegPre,totalDegPost);
+c_k = [];
+numNeighbors = [];
+[totalDegPre,totalDegPost,c_k,numNeighbors] = findBaseModules(between_matrix{1}, ...
+    between_matrix{1},Q,M,M,subscripts,path,totalDegPre,totalDegPost,c_k,numNeighbors);
 
 totalDegree = totalDegPre+totalDegPost;
 
@@ -77,12 +80,26 @@ xlabel('Degree');
 
 figure;
 pd = 0;
-for i = 1:max(totalDegree)
+for i = 1:.8:max(totalDegree)
     pd = pd + 1;
     v = find(totalDegree >= i);
     sz = length(v);
     perx(pd) = (sz/length(totalDegree));
 end
 loglog(perx,'o');
+
+figure;
+% pd = 0;
+% for i = 0:.05:max(c_k)
+%     pd = pd + 1;
+%     v = find(c_k >= i);
+%     sz = length(v);
+%     perx2(pd) = (sz/length(c_k));
+% end
+
+c_k(isnan(c_k)) = [];
+loglog(sort(c_k,'descend'),'o');
+xlim([10^0 10^2]);
+ylim([10^-2 10^0]);
 
 
