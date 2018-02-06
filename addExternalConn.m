@@ -37,17 +37,15 @@ function m = addExternalConn(m,w)
             inx1 = randi([1, size(temp,1)]);
             inx2 = randi([1, size(temp,2)]);
         else
+            inf_count = 0;
             while connection == true
                 if (prev_inx1 == inx1 && prev_inx2 == inx2)
-                    m
-                    D1
-                    D2
-                    totalD
-                    P1
-                    P2
-                    inx1
-                    inx2
-                    disp('gone infinite');
+                    inf_count = inf_count + 1;
+                    
+                    if inf_count == 5
+                        disp('gone infinite, exiting');
+                        return;
+                    end
                 end
                 r1 = rand;
                 temp_inx1 = find([-1 P1] < r1);

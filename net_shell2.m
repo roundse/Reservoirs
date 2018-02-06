@@ -3,21 +3,22 @@ close all
 clc
 
 M = 4;
-Q = 5;
-T = 1600;
+Q = 3;
+T = 7000;
 typeConnProb = zeros(1,M);
 
 disp('Setting connection probabilities for each level.');
+
 % % % ***** 100pct chance of an internal connection at the very top.
 typeConnProb(M) = 1.0;
 for i = (M-1):-1:1
     typeConnProb(i) = typeConnProb(i+1)-.1;
 end
 
-% typeConnProb(1) = 0.7;
-% typeConnProb(2) = 0.9;
-% typeConnProb(3) = 0.95;
-% typeConnProb(4) = 0.995;
+% typeConnProb(1) = 0.5;
+% typeConnProb(2) = 0.95;
+% typeConnProb(3) = 0.995;
+%typeConnProb(4) = 0.995;
 
 excWght = 0.05;
 betweenWght = 0.25;
@@ -34,7 +35,7 @@ disp('Running network.');
 order = 0;
 for t = 1:T
     % type selection needs to be inside fxns
-    [between_matrix{1}, order, internal] = addConnRecursive(between_matrix{1},Q,M,excWght,betweenWght,1,typeConnProb,[],order);
+    [between_matrix{1}, order, internal] = addConnRecursive(between_matrix{1},Q,M,excWght,betweenWght,n,typeConnProb,[],order);
     if internal == true
         %disp('New neuron added; update participating between-module weights.');
         [between_matrix{1}, s] = getModuleSize(between_matrix{1},order,M);
@@ -87,6 +88,9 @@ for i = 1:.8:max(totalDegree)
     perx(pd) = (sz/length(totalDegree));
 end
 loglog(perx,'o');
+xlabel('k');
+ylabel('P(k)');
+gpfit(perx)
 
 figure;
 % pd = 0;
@@ -101,5 +105,7 @@ c_k(isnan(c_k)) = [];
 loglog(sort(c_k,'descend'),'o');
 xlim([10^0 10^2]);
 ylim([10^-2 10^0]);
+xlabel('k');
+ylabel('C(k)');
 
 
