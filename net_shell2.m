@@ -15,9 +15,9 @@ for i = (M-1):-1:1
     typeConnProb(i) = typeConnProb(i+1)-.1;
 end
 
-% typeConnProb(1) = 0.5;
-% typeConnProb(2) = 0.95;
-% typeConnProb(3) = 0.995;
+typeConnProb(1) = 0.7;
+typeConnProb(2) = 0.8;
+typeConnProb(3) = 0.9;
 %typeConnProb(4) = 0.995;
 
 excWght = 0.05;
@@ -35,7 +35,7 @@ disp('Running network.');
 order = 0;
 for t = 1:T
     % type selection needs to be inside fxns
-    [between_matrix{1}, order, internal] = addConnRecursive(between_matrix{1},Q,M,excWght,betweenWght,n,typeConnProb,[],order);
+    [between_matrix{1}, order, internal] = addConnRecursive(between_matrix{1},Q,M,excWght,betweenWght,2,typeConnProb,[],order);
     if internal == true
         %disp('New neuron added; update participating between-module weights.');
         [between_matrix{1}, s] = getModuleSize(between_matrix{1},order,M);

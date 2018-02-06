@@ -1,6 +1,7 @@
 function m = addExternalConn(m,w)
     disp('Adding a new connection between modules.');
     
+    for i = 1:2
     connection = true;
     
     prev_inx1 = 0;
@@ -16,7 +17,6 @@ function m = addExternalConn(m,w)
     % If no connections exist or the degree is 1, then randomly choose two
     % neurons.
     % Otherwise, grow using PA rule.
-    
     if ( ~(any(any(temp))) ||  sum(sum(temp)) == 1 )
         inx1 = randi([1, size(temp,1)]);
         inx2 = randi([1, size(temp,2)]);
@@ -48,24 +48,27 @@ function m = addExternalConn(m,w)
                     end
                 end
                 r1 = rand;
-                temp_inx1 = find([-1 P1] < r1);
+                temp_inx1 = find([-1 P1] < r1, 1, 'last');
                 r2 = rand;
-                temp_inx2 = find([-1 P2] < r2);
+                temp_inx2 = find([-1 P2] < r2, 1, 'last');
                 
                 % Get a list of candidate indeces less than r, then pick
                 % a random index. This helps avoid infinite loop.
-                inx1 = temp_inx1(randi([1,length(temp_inx1)]));
-                inx2 = temp_inx2(randi([1,length(temp_inx2)]));
+%                 inx1 = temp_inx1(randi([1,length(temp_inx1)]));
+%                 inx2 = temp_inx2(randi([1,length(temp_inx2)]));
 
-                if m(inx1,inx2) == 0 
+                if m(temp_inx1,temp_inx2) == 0 
                     connection = false;
+                    inx1 = temp_inx1;
+                    inx2 = temp_inx2;
                 else
-                    prev_inx1 = inx1;
-                    prev_inx2 = inx2;
+                    prev_inx1 = temp_inx1;
+                    prev_inx2 = temp_inx2;
                 end   
             end
         end
     end
 
     m(inx1,inx2) = w;
+    end
 end
