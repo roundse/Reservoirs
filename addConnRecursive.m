@@ -1,4 +1,4 @@
-function [m, order, internal] = addConnRecursive(m,Q,d,in_w,exc_w,v,probs,internal,order)
+function [m, order, path1, path2, internal] = addConnRecursive(orig_m,m,Q,orig_d,d,in_w,exc_w,v,probs,internal,order,path1,path2)
     % Check to see if we've reached the bottom of the tree.
     % If not, keep going. Otherwise, add a neuron.
     if d > 1
@@ -32,9 +32,10 @@ function [m, order, internal] = addConnRecursive(m,Q,d,in_w,exc_w,v,probs,intern
 %             end
 
             order(d-1) = index;
-            
+            path1(d-1) = mod;
+            path2(d-1) = mod;
 
-            [m{index}, order, internal] = addConnRecursive(m{index},Q,d-1,in_w,exc_w,v,probs,internal,order);            
+            [m{index}, order, path1, path2, internal] = addConnRecursive(orig_m,m{index},Q,orig_d,d-1,in_w,exc_w,v,probs,internal,order,path1,path2);            
         else        
             internal = false;
             %disp('Adding a between-module connection.');
@@ -53,6 +54,8 @@ function [m, order, internal] = addConnRecursive(m,Q,d,in_w,exc_w,v,probs,intern
 %             end
             index = getBetweenModIndex(Q,mod2,mod1);
             order(d-1) = index;
+            path1(d-1) = mod1;
+            path2(d-1) = mod2;  
             
             % Check to make sure a fully-connected matrix wasn't selected.
             if d == 2
@@ -73,6 +76,8 @@ function [m, order, internal] = addConnRecursive(m,Q,d,in_w,exc_w,v,probs,intern
                     end
                     index = getBetweenModIndex(Q,mod2,mod1);
                     order(d-1) = index;
+                    path1(d-1) = mod1;
+                    path2(d-1) = mod2;                   
                 end
                 
                 if all(all(m{index}))
@@ -82,12 +87,13 @@ function [m, order, internal] = addConnRecursive(m,Q,d,in_w,exc_w,v,probs,intern
                     return;
                 end                
             end
-            [m{index}, order, internal] = addConnRecursive(m{index},Q,d-1,in_w,exc_w,v,probs,internal,order);
+            
+            [m{index}, order, path1, path2, internal] = addConnRecursive(orig_m,m{index},Q,orig_d,d-1,in_w,exc_w,v,probs,internal,order,path1,path2);
         end
     else
 
         if internal == true
-            m = addNeuron(m,v,in_w);
+            m = addNeuron(orig_m,m,Q,orig_d,v,in_w,path1);
         else 
             checkIfInternal = zeros(1,length(order));
                 for l = 1:length(order)
@@ -107,7 +113,7 @@ function [m, order, internal] = addConnRecursive(m,Q,d,in_w,exc_w,v,probs,intern
 %                     index = getBetweenModIndex(Q,mod2,mod1);
 %                     order(d-1) = index;
                 end            
-            m = addExternalConn(m,exc_w);
+            m = addExternalConn(orig_m,m,Q,orig_d,exc_w,path1,path2);
         end        
     end
 end

@@ -1,7 +1,11 @@
-function m = addExternalConn(m,w)
+function m = addExternalConn(orig_m,m,Q,orig_d,w,order1,order2)
     disp('Adding a new connection between modules.');
     
-    for i = 1:2
+    temp = m;
+    
+    [s2,s1] = size(m);
+    
+    %for i = 1:2
     connection = true;
     
     prev_inx1 = 0;
@@ -9,25 +13,51 @@ function m = addExternalConn(m,w)
     inx1 = nan;
     inx2 = nan;
 
-    % Update degree counts.
-    temp = m;
+    c_pre_1 = zeros(1,s1);
+    c_post_1 = zeros(1,s1);
 
-    temp(temp>0) = 1;
+    c_pre_2 = zeros(1,s2);
+    c_post_2 = zeros(1,s2);
+    
+    path = [];
+    
+    for n = 1:s1
+       [orig_m, temp_c_pre] = getNeuronTotDegreePre(orig_m,order1,n,Q,orig_d,c_pre_1(n),path);
+       c_pre_1(n) = c_pre_1(n) + temp_c_pre;
 
+       [orig_m, temp_c_post] = getNeuronTotDegreePost(orig_m,order1,n,Q,orig_d,c_post_1(n),path);
+       c_post_1(n) = c_post_1(n) + temp_c_post;       
+    end
+
+    tot_1 = c_pre_1 + c_post_1;
+
+    for n = 1:s2
+       [orig_m, temp_c_pre] = getNeuronTotDegreePre(orig_m,order2,n,Q,orig_d,c_pre_2(n),path);
+       c_pre_2(n) = c_pre_2(n) + temp_c_pre;
+
+       [orig_m, temp_c_post] = getNeuronTotDegreePost(orig_m,order2,n,Q,orig_d,c_post_2(n),path);
+       c_post_2(n) = c_post_2(n) + temp_c_post;       
+    end
+    
+    tot_2 = c_pre_2 + c_post_2;
+    
+    D1 = tot_1;
+    D2 = tot_2;
+    totalD1 = sum(D1);
+    totalD2 = sum(D2);
+        
     % If no connections exist or the degree is 1, then randomly choose two
     % neurons.
     % Otherwise, grow using PA rule.
-    if ( ~(any(any(temp))) ||  sum(sum(temp)) == 1 )
-        inx1 = randi([1, size(temp,1)]);
-        inx2 = randi([1, size(temp,2)]);
-    else
-        D1 = sum(temp);
-        D2 = sum(transpose(temp));
-        totalD = sum(D1);
+%     if totalD1 == 0 || totalD2 == 0 || totalD1 == 1 || totalD2 == 1
+%         inx1 = randi([1, size(temp,1)]);
+%         inx2 = randi([1, size(temp,2)]);
+%     else
+
 
         % Get probability
-        P1 = cumsum(D1 ./ totalD);
-        P2 = cumsum(D2 ./ totalD);
+        P1 = cumsum(D1 ./ totalD1);
+        P2 = cumsum(D2 ./ totalD2);
 
         % Randomly select neurons if the matrix is too small for PA rule,
         % or if the matrix has too few connections to begin with.
@@ -39,10 +69,10 @@ function m = addExternalConn(m,w)
         else
             inf_count = 0;
             while connection == true
-                if (prev_inx1 == inx1 && prev_inx2 == inx2)
+                if connection == true
                     inf_count = inf_count + 1;
                     
-                    if inf_count == 5
+                    if inf_count == 6
                         disp('gone infinite, exiting');
                         return;
                     end
@@ -57,7 +87,7 @@ function m = addExternalConn(m,w)
 %                 inx1 = temp_inx1(randi([1,length(temp_inx1)]));
 %                 inx2 = temp_inx2(randi([1,length(temp_inx2)]));
 
-                if m(temp_inx1,temp_inx2) == 0 
+                if m(temp_inx2,temp_inx1) == 0 
                     connection = false;
                     inx1 = temp_inx1;
                     inx2 = temp_inx2;
@@ -67,8 +97,8 @@ function m = addExternalConn(m,w)
                 end   
             end
         end
-    end
+%     end
 
-    m(inx1,inx2) = w;
-    end
+    m(inx2,inx1) = w;
+    %end
 end
