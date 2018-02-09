@@ -4,7 +4,7 @@ clc
 
 M = 4;
 Q = 3;
-T = 1;
+T = 400;
 typeConnProb = zeros(1,M);
 
 disp('Setting connection probabilities for each level.');
@@ -44,99 +44,96 @@ for t = 1:T
         between_matrix{1} = updateBetweenPreSyn(between_matrix{1},Q,s,order,M,M,0,0);
         between_matrix{1} = updateBetweenPostSyn(between_matrix{1},Q,s,order,M,M,0,0);
     end
-    
-    [between_matrix{1}, this_count] = getNeuronCountBelowDesiredD(between_matrix{1},Q,M,2,1,0);
-    this_count
 end
 
-% path = [];
-% subscripts = [];
-% totalDegPre = [];
-% totalDegPost = [];
-% c_k = [];
-% numNeighbors = [];
-% [totalDegPre,totalDegPost,c_k,numNeighbors] = findBaseModules(between_matrix{1}, ...
-%     between_matrix{1},Q,M,M,subscripts,path,totalDegPre,totalDegPost,c_k,numNeighbors);
-% 
-% totalDegree = totalDegPre+totalDegPost;
-% 
+path = [];
+subscripts = [];
+totalDegPre = [];
+totalDegPost = [];
+c_k = [];
+numNeighbors = [];
+[totalDegPre,totalDegPost,c_k,numNeighbors] = findBaseModules(between_matrix{1}, ...
+    between_matrix{1},Q,M,M,subscripts,path,totalDegPre,totalDegPost,c_k,numNeighbors);
+
+totalDegree = totalDegPre+totalDegPost;
+
 disp('counting neurons');
 initial = 0;
 [between_matrix{1}, nCount] = getNeuronCount(between_matrix{1},Q,M,initial);
 disp(['Total neurons: ',num2str(nCount)]);
-% % initial = 0;
-% % [between_matrix{1}, betweenDegree] = getTotalBetweenModConnCount(between_matrix{1},Q,M,M,initial);
-% % disp(['Total between-mod. edges: ',num2str(betweenDegree)]);
-% 
-% % figure;
-% numN = 1:nCount;
-% deg = sort(totalDegree,'descend');
-% % plot(deg,numN);
-% % title('Degree distribution');
-% % ylabel('Neuron #');
-% % xlabel('Degree');
-% 
-% % figure;
-% % hist(totalDegree);
-% % xlim([0 max(totalDegree)]);
-% % title(['Degree distribution - M = ',num2str(M),', n = ',num2str(Q),', T = ',num2str(T)]);
-% % ylabel('Neuron #');
-% % xlabel('Degree');
-% % 
-% % set(gca,'fontsize',15);
-% 
-% % figure;
-% pd = 0;
-% y_vec = 1:max(totalDegree);
-% for i = 1:max(totalDegree)
-%     pd = pd + 1;
-%     v = find(totalDegree == i);
-%     sz = length(v);
-%     perx(pd) = (sz/length(totalDegree));
-% end
-% % loglog(perx,'o');
-% % title(['Degree distribution - M = ',num2str(M),', n = ',num2str(Q),', T = ',num2str(T)]);
-% % xlabel('k');
-% % ylabel('P(k)');
-% 
-% 
-% % set(gca,'fontsize',15);
-% % 
-% % figure;
-% for k = 1:max(totalDegree)
-%     [v i] = find(totalDegree==k);
-%     cOfK(k) = mean(c_k(i));
-% end
-% 
-% % loglog(sort(cOfK,'descend'),'o');
-% % xlim([10^0 10^2]);
-% % ylim([10^-2 10^0]);
-% % xlabel('k');
-% % ylabel('C(k)');
-% % title(['Cluster Coeff - M = ',num2str(M),', n = ',num2str(Q),', T = ',num2str(T)]);
-% % 
-% % set(gca,'fontsize',15);
-% 
-% 
+% initial = 0;
+% [between_matrix{1}, betweenDegree] = getTotalBetweenModConnCount(between_matrix{1},Q,M,M,initial);
+% disp(['Total between-mod. edges: ',num2str(betweenDegree)]);
+
 % figure;
-% [slope_dist intercept_dist] = logfit(y_vec,perx,'loglog')
-% ylim([10^-4 10^0]);
-% xlim([10^0 10^2]);
+numN = 1:nCount;
+deg = sort(totalDegree,'descend');
+% plot(deg,numN);
+% title('Degree distribution');
+% ylabel('Neuron #');
+% xlabel('Degree');
+
+% figure;
+% hist(totalDegree);
+% xlim([0 max(totalDegree)]);
+% title(['Degree distribution - M = ',num2str(M),', n = ',num2str(Q),', T = ',num2str(T)]);
+% ylabel('Neuron #');
+% xlabel('Degree');
+% 
+% set(gca,'fontsize',15);
+
+% figure;
+pd = 0;
+y_vec = 1:max(totalDegree);
+for i = 1:max(totalDegree)
+    pd = pd + 1;
+    v = find(totalDegree == i);
+    sz = length(v);
+    perx(pd) = (sz/length(totalDegree));
+end
+% loglog(perx,'o');
 % title(['Degree distribution - M = ',num2str(M),', n = ',num2str(Q),', T = ',num2str(T)]);
 % xlabel('k');
 % ylabel('P(k)');
+
+
 % set(gca,'fontsize',15);
-% annotation('textbox','String',['Slope: ',num2str(abs(round(slope_dist,1)))],'fontsize',15,'fontweight','bold');
 % 
 % figure;
-% [slope_ck intercept_ck] = logfit(y_vec,cOfK,'loglog')
+for k = 1:max(totalDegree)
+    [v i] = find(totalDegree==k);
+    cOfK(k) = mean(c_k(i));
+end
+
+% loglog(sort(cOfK,'descend'),'o');
 % xlim([10^0 10^2]);
 % ylim([10^-2 10^0]);
 % xlabel('k');
 % ylabel('C(k)');
 % title(['Cluster Coeff - M = ',num2str(M),', n = ',num2str(Q),', T = ',num2str(T)]);
+% 
 % set(gca,'fontsize',15);
-% annotation('textbox','String',['Slope: ',num2str(abs(round(slope_ck,1)))],'fontsize',15,'fontweight','bold');
+
+
+figure;
+[slope_dist intercept_dist] = logfit(y_vec,perx,'loglog')
+ylim([10^-4 10^0]);
+xlim([10^0 10^2]);
+title(['Degree distribution - M = ',num2str(M),', n = ',num2str(Q),', T = ',num2str(T)]);
+xlabel('k');
+ylabel('P(k)');
+set(gca,'fontsize',15);
+annotation('textbox','String',['Slope: ',num2str(abs(round(slope_dist,1)))],'fontsize',15,'fontweight','bold');
+
+figure;
+[slope_ck intercept_ck] = logfit(y_vec,cOfK,'loglog')
+xlim([10^0 10^2]);
+ylim([10^-2 10^0]);
+xlabel('k');
+ylabel('C(k)');
+title(['Cluster Coeff - M = ',num2str(M),', n = ',num2str(Q),', T = ',num2str(T)]);
+set(gca,'fontsize',15);
+annotation('textbox','String',['Slope: ',num2str(abs(round(slope_ck,1)))],'fontsize',15,'fontweight','bold');
 
 
 
