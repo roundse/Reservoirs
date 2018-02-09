@@ -4,7 +4,7 @@ clc
 
 M = 4;
 Q = 3;
-T = 400;
+T = 1600;
 typeConnProb = zeros(1,M);
 
 disp('Setting connection probabilities for each level.');
